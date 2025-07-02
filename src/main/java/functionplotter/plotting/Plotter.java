@@ -17,9 +17,7 @@ public class Plotter {
                 .append("\" preserveAspectRatio=\"xMidYMid meet\" xmlns=\"http://www.w3.org/2000/svg\">\n");
         res.append(BaseCoordinateSystem.genBase());
         for (ColoredNode node : coloredNodes) {
-            res.append(
-                    plotFunction(node)
-            );
+            res.append(plotFunction(node));
         }
         res.append("</svg>\n");
         return res.toString();
@@ -28,12 +26,21 @@ public class Plotter {
     private static String plotFunction(ColoredNode coloredNode) {
         StringBuilder res = new StringBuilder();
         Double prevX = null, prevY = null;
-        for (double x = GlobalContext.XY_RANGE.xMin(); x <= GlobalContext.XY_RANGE.xMax(); x += getStepSize()) {
+        System.out.println("Plotter.plotFunction: " + coloredNode.ast().toStringInfix());
+        if (coloredNode.ast().toStringInfix().equals("0")) { //! not an elegant solution (Problem: Emtpy expressions should not be plotted)
+            return res.toString(); // Skip empty expressions
+        }
+        double stepSize = getStepSize();
+        for (double x = GlobalContext.XY_RANGE.xMin(); x <= GlobalContext.XY_RANGE.xMax(); x += stepSize) {
             GlobalContext.VARIABLES.set("x", new ValueNode(x));
             double y = coloredNode.ast().evaluate();
             int xPos = (int) ((x - GlobalContext.XY_RANGE.xMin()) / (GlobalContext.XY_RANGE.xMax() - GlobalContext.XY_RANGE.xMin()) * GlobalContext.OUT_PUT_DIMENSION.width());
             int yPos = (int) ((y - GlobalContext.XY_RANGE.yMin()) / (GlobalContext.XY_RANGE.yMax() - GlobalContext.XY_RANGE.yMin()) * GlobalContext.OUT_PUT_DIMENSION.height());
             yPos = GlobalContext.OUT_PUT_DIMENSION.height() - yPos;
+
+            if (y < GlobalContext.XY_RANGE.yMin() || y > GlobalContext.XY_RANGE.yMax() || Double.isNaN(y)) {
+                continue; // Skip points outside the y range
+            }
             if (prevX != null && prevY != null) {
                 res.append("<line x1=\"").append(prevX.intValue())
                         .append("\" y1=\"").append(prevY.intValue())
