@@ -1,27 +1,26 @@
 package functionplotter.utils;
 
-import functionplotter.ast.ASTNodeI;
-
-public record Variable(String name, ASTNodeI astNode) {
+import functionplotter.ast.AST;
+public record Variable(String name, AST ast) {
 
     public double evaluate() {
-        if (astNode == null) {
-            throw new IllegalStateException("Variable astNode is not set.");
+        if (ast == null) {
+            throw new IllegalStateException("Variable ast is not set.");
         }
-        return astNode.evaluate();
+        return ast.evaluate();
     }
 
     @Override
     public String toString() {
         return "Variable{" +
                 "name='" + name + '\'' +
-                ", astNode=" + astNode +
+                ", ast=" + ast +
                 '}';
     }
 
     public String toStringInfix() {
-        return this.astNode.toStringInfix();
+        return this.ast.toStringInfix();
     }
 
-    public String toStringRPN() { return this.astNode.toStringRPN(); }
+    public String toStringRPN() { return this.ast.toStringRPN(); }
 }

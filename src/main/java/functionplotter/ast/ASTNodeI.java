@@ -4,4 +4,7 @@ public sealed interface ASTNodeI permits AST, BinaryOpNode, FunctionCallNode, Un
     double evaluate();
     String toStringInfix();
     String toStringRPN();
+    String toDotGraph();
+    String name();
+    String getId();
 }

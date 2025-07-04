@@ -15,23 +15,23 @@ public class InfixParser implements ParserI {
     private int pos = 0;
     private final Lexer lexer = new Lexer();
 
-    public ASTNodeI parse(String input) throws ParseException {
+    public AST parse(String input) throws ParseException {
         this.tokens = this.lexer.tokenize(input);
-        System.out.println("InfixParser.parse: Tokens: " + this.tokens);
+//        System.out.println("InfixParser.parse: Tokens: " + this.tokens);
         this.pos = 0;
         if (this.tokens.get(this.pos).type() == TOKEN_TYPE.EOF) {
             return new AST(new ValueNode(0)); // Leerer Ausdruck gibt 0 zurück
         }
-        ASTNodeI result = new AST(parseExpression());
+        AST result = new AST(parseExpression());
         if (this.tokens.get(pos).type() != TOKEN_TYPE.EOF) {
             throw new ParseException("Unerwartete Tokens am Ende: " + peek(), pos);
         }
-        System.out.println("InfixParser.parse: Finished parsing expression. Result: " + result);
+//        System.out.println("InfixParser.parse: Finished parsing expression. Result: " + result);
         return result;
     }
 
     private ASTNodeI parseExpression() throws ParseException {
-        System.out.println("InfixParser.parseExpression: Parsing expression at position: " + pos);
+//        System.out.println("InfixParser.parseExpression: Parsing expression at position: " + pos);
         ASTNodeI node = parseTerm();
         while (match(TOKEN_TYPE.PLUS, TOKEN_TYPE.MINUS)) {
             TOKEN_TYPE op = previous().type();
@@ -42,7 +42,7 @@ public class InfixParser implements ParserI {
     }
 
     private ASTNodeI parseTerm() throws ParseException {
-        System.out.println("InfixParser.parseTerm: Parsing term at position: " + pos);
+//        System.out.println("InfixParser.parseTerm: Parsing term at position: " + pos);
         ASTNodeI node = parseFactor();
         while (match(TOKEN_TYPE.MULTIPLY, TOKEN_TYPE.DIVIDE)) {
             TOKEN_TYPE op = previous().type();
@@ -53,7 +53,7 @@ public class InfixParser implements ParserI {
     }
 
     private ASTNodeI parseFactor() throws ParseException {
-        System.out.println("InfixParser.parseFactor: Parsing factor at position: " + pos);
+//        System.out.println("InfixParser.parseFactor: Parsing factor at position: " + pos);
         ASTNodeI node = parsePrimary();
         if (match(TOKEN_TYPE.EXPONENT)) {
             TOKEN_TYPE op = previous().type();
@@ -63,7 +63,7 @@ public class InfixParser implements ParserI {
         return node;
     }
     private ASTNodeI parsePrimary() throws ParseException {
-        System.out.println("InfixParser.parsePrimary: Parsing primary at position: " + pos);
+//        System.out.println("InfixParser.parsePrimary: Parsing primary at position: " + pos);
         if (match(TOKEN_TYPE.UNARYMINUS, TOKEN_TYPE.MINUS)) {
             // -x wird als UnaryOpNode gespeichert
             return new UnaryOpNode(parseFactor(), TOKEN_TYPE.UNARYMINUS);
@@ -86,7 +86,7 @@ public class InfixParser implements ParserI {
     }
 
     private ASTNodeI parseFunctionCall() throws ParseException {
-        System.out.println("InfixParser.parseFunctionCall: Parsing function call at position: " + pos);
+//        System.out.println("InfixParser.parseFunctionCall: Parsing function call at position: " + pos);
         String funcName = previous().text();
         expect(TOKEN_TYPE.OPENPARENTHESIS);
         ASTNodeI firstArg = parseExpression();
@@ -119,7 +119,7 @@ public class InfixParser implements ParserI {
     @Override
     public boolean isValid(String input) {
         try {
-            System.out.println("InfixParser.isvalid: Validating infix expression: " + input);
+//            System.out.println("InfixParser.isvalid: Validating infix expression: " + input);
             this.parse(input);
             return true;
         } catch (ParseException e) {

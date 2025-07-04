@@ -1,31 +1,50 @@
 package functionplotter.plotting;
 
+import functionplotter.ast.ASTNodeI;
+import functionplotter.ast.ValueNode;
+import functionplotter.plotting.utils.OutPutDimension;
+import functionplotter.plotting.utils.XYRange;
 import functionplotter.utils.GlobalContext;
+
+import javax.management.ValueExp;
 
 public class BaseCoordinateSystem {
 
     private static int axisXPos = -1; // position of the X-axis in the SVG output
     private static int axisYPos = -1; // position of the Y-axis in the SVG output
 
-    public static String genBase() {
-        System.out.println("Drawing grid...");
+    static int width;
+    static int height;
+
+    static double xMin;
+    static double xMax;
+    static double yMin;
+    static double yMax;
+
+    static ASTNodeI scalingFunction;
+    public static String genBase(XYRange xyRange, OutPutDimension outPutDimension, ASTNodeI scalingFun) {
         StringBuilder res = new StringBuilder();
-        double xMin = GlobalContext.XY_RANGE.xMin();
-        double xMax = GlobalContext.XY_RANGE.xMax();
-        double yMin = GlobalContext.XY_RANGE.yMin();
-        double yMax = GlobalContext.XY_RANGE.yMax();
-        axisXPos = (int) ((-xMin / GlobalContext.XY_RANGE.xRange()) * GlobalContext.OUT_PUT_DIMENSION.width());
-        axisYPos = (GlobalContext.OUT_PUT_DIMENSION.height() - (int) ((-yMin / GlobalContext.XY_RANGE.yRange()) * GlobalContext.OUT_PUT_DIMENSION.height()));
-        res.append(genGrid(xMin, xMax, yMin, yMax));
-        res.append(genYAxis(xMin, xMax));
-        res.append(genXAxis(yMin, yMax));
+        width = outPutDimension.width();
+        height = outPutDimension.height();
+
+        xMin = xyRange.xMin();
+        xMax = xyRange.xMax();
+        yMin = xyRange.yMin();
+        yMax = xyRange.yMax();
+
+        scalingFunction = scalingFun;
+
+        axisXPos = (int) ((-xMin / (xMax - xMin)) * width);
+        axisYPos = (height - (int) ((-yMin / (yMax - yMin) * height)));
+        res.append(genGrid());
+        res.append(genYAxis());
+        res.append(genXAxis());
         return res.toString();
     }
 
-    private static String genXAxis(double yMin, double yMax) {
-        System.out.println("Drawing X-axis from " + yMin + " to " + yMax);
+    private static String genXAxis() {
+//        System.out.println("Drawing X-axis from " + yMin + " to " + yMax);
         if (yMax < 0 || yMin > 0) return ""; // return if the axis is not in the range
-        int width = GlobalContext.OUT_PUT_DIMENSION.width();
         return "<line x1=\"0\" y1=\"" +
                 axisYPos +
                 "\" x2=\"" +
@@ -35,10 +54,9 @@ public class BaseCoordinateSystem {
                 "\" style=\"stroke:rgb(0,0,0);stroke-width:2\"/>\n";
     }
 
-    private static String genYAxis(double xMin, double xMax) {
-        System.out.println("Drawing Y-axis from " + xMin + " to " + xMax);
+    private static String genYAxis() {
+//        System.out.println("Drawing Y-axis from " + xMin + " to " + xMax);
         if (xMax < 0 || xMin > 0) return "";
-        int height = GlobalContext.OUT_PUT_DIMENSION.height();
         return "<line x1=\"" +
                 axisXPos +
                 "\" y1=\"0\" x2=\"" +
@@ -48,24 +66,20 @@ public class BaseCoordinateSystem {
                 "\" style=\"stroke:rgb(0,0,0);stroke-width:3\"/>\n";
     }
 
-    private static String genGrid(double xMin, double xMax, double yMin, double yMax) {
-        System.out.println("Drawing grid lines...");
+    private static String genGrid() {
+//        System.out.println("Drawing grid lines...");
         StringBuilder res = new StringBuilder();
-        int width = GlobalContext.OUT_PUT_DIMENSION.width();
-        int height = GlobalContext.OUT_PUT_DIMENSION.height();
 
-        double xRange = GlobalContext.XY_RANGE.xRange();
-        double yRange = GlobalContext.XY_RANGE.yRange();
 
         int targetLines = 20; // Number of grid lines to be drawn ideally
 
-        double xStep = calculateGridStep(xRange / targetLines);
-        double yStep = calculateGridStep(yRange / targetLines);
+        double xStep = calculateGridStep((xMax - xMin) / targetLines);
+        double yStep = calculateGridStep((yMax - yMin) / targetLines);
 
         // vertical lines (x)
         double xStart = xMin / xStep * xStep;
         for (double x = xStart; x <= xMax; x += xStep) {
-            int xPos = (int) ((x - xMin) / xRange * width);
+            int xPos = (int) ((x - xMin) / (xMax - xMin) * width);
             res.append("<line x1=\"")
                     .append(xPos)
                     .append("\" y1=\"0\" x2=\"")
@@ -78,9 +92,9 @@ public class BaseCoordinateSystem {
 
         // horizontal lines (y)
         double yStart = yMin / yStep * yStep;
-        System.out.println(yStart);
+//        System.out.println(yStart);
         for (double y = yStart; y <= yMax; y += yStep) {
-            int yPos = height - (int) ((y - yMin) / yRange * height);
+            int yPos = height - (int) ((y - yMin) / (yMax - yMin) * height);
             res.append("<line x1=\"0\" y1=\"")
                     .append(yPos)
                     .append("\" x2=\"")
@@ -114,10 +128,19 @@ public class BaseCoordinateSystem {
     }
 
     private static String drawVerticalLineGridLabel(double value, int xPos) {
+        GlobalContext.VARIABLES.set("x", new ValueNode(value));
+        value = scalingFunction == null ? value : scalingFunction.evaluate();
         String label = String.valueOf(value)
-                .replaceAll("\\.0+$", "")
-                .replaceAll("(\\.\\d*?)0+$", "$1")
-                .replaceAll("\\.$", ""); // Remove trailing zeros
+            .replaceAll("\\.0+$", "")
+            .replaceAll("(\\.\\d*?)0+$", "$1")
+            .replaceAll("\\.$", "");
+        if (label.contains(".")) {
+            int idx = label.indexOf(".");
+            if (label.length() - idx - 1 > 2) {
+                label = label.substring(0, idx + 3);
+                label = label.replaceAll("(\\.\\d*?)0+$", "$1").replaceAll("\\.$", "");
+            }
+        }
         int yPos = axisYPos + 15; // Position below the X-axis
         return "<text x=\"" +
                 (xPos - 10) + // Adjust x position for better visibility
@@ -130,9 +153,9 @@ public class BaseCoordinateSystem {
 
     private static String drawHorizontalLineGridLabel(double value, int yPos) {
         String label = String.valueOf(value)
-                .replaceAll("\\.0+$", "")
-                .replaceAll("(\\.\\d*?)0+$", "$1")
-                .replaceAll("\\.$", ""); // Remove trailing zeros
+            .replaceAll("\\.0+$", "")
+            .replaceAll("(\\.\\d*?)0+$", "$1")
+            .replaceAll("\\.$", ""); // Remove trailing zeros
         int xPos = axisXPos + 10; // Position to the right of the Y-axis
         return "<text x=\"" +
                 xPos +

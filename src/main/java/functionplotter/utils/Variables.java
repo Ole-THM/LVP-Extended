@@ -1,5 +1,6 @@
 package functionplotter.utils;
 
+import functionplotter.ast.AST;
 import functionplotter.ast.ValueNode;
 import functionplotter.ast.ASTNodeI;
 
@@ -12,6 +13,10 @@ public class Variables {
 
     public Variables() {
         this.variables = new ArrayList<>();
+        this.add(
+            new Variable("e", new AST(new ValueNode(Math.E))),
+            new Variable("pi", new AST(new ValueNode(Math.PI)))
+        );
     }
 
     public void add(Variable...variables) {
@@ -20,7 +25,7 @@ public class Variables {
 
     public void set(String name, ASTNodeI node) {
         this.remove(name);
-        this.add(new Variable(name, node));
+        this.add(new Variable(name, new AST(node)));
     }
 
     public void remove(String name) {
@@ -33,6 +38,6 @@ public class Variables {
                 return variable;
             }
         }
-        return new Variable("default", new ValueNode(0)); // Variable not found return default variable
+        return new Variable("default", new AST(new ValueNode(0))); // Variable not found return default variable
     }
 }

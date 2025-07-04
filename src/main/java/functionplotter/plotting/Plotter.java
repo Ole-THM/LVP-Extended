@@ -1,21 +1,48 @@
 package functionplotter.plotting;
 
+import functionplotter.ast.AST;
+import functionplotter.ast.ASTNodeI;
 import functionplotter.ast.ValueNode;
+import functionplotter.ast.VariableNode;
 import functionplotter.plotting.utils.ColoredNode;
+import functionplotter.plotting.utils.OutPutDimension;
+import functionplotter.plotting.utils.XYRange;
 import functionplotter.utils.GlobalContext;
 
 public class Plotter {
 
-    public static String plot(ColoredNode...coloredNodes) {
-        int width = GlobalContext.OUT_PUT_DIMENSION.width();
-        int height = GlobalContext.OUT_PUT_DIMENSION.height();
+    static int width;
+    static int height;
+
+    static double xMin;
+    static double xMax;
+    static double yMin;
+    static double yMax;
+
+    static ASTNodeI scalingFunction;
+
+    public static String plot(XYRange xyRange, OutPutDimension outPutDimension, ColoredNode...coloredNodes) {
+        return plot(xyRange, outPutDimension, new AST(new VariableNode("x")), coloredNodes);
+    }
+
+    public static String plot(XYRange xyRange, OutPutDimension outPutDimension, ASTNodeI scalingFun, ColoredNode...coloredNodes) {
+
+        width = outPutDimension.width();
+        height = outPutDimension.height();
+
+        xMin = xyRange.xMin();
+        xMax = xyRange.xMax();
+        yMin = xyRange.yMin();
+        yMax = xyRange.yMax();
+
+        scalingFunction = scalingFun;
 
         StringBuilder res = new StringBuilder();
         // Set the viewBox and preserveAspectRatio attributes
         res.append("<svg width=\"").append(width).append("\" height=\"").append(height)
                 .append("\" viewBox=\"0 0 ").append(width).append(" ").append(height)
                 .append("\" preserveAspectRatio=\"xMidYMid meet\" xmlns=\"http://www.w3.org/2000/svg\">\n");
-        res.append(BaseCoordinateSystem.genBase());
+        res.append(BaseCoordinateSystem.genBase(xyRange, outPutDimension, scalingFun));
         for (ColoredNode node : coloredNodes) {
             res.append(plotFunction(node));
         }
@@ -25,43 +52,44 @@ public class Plotter {
 
     private static String plotFunction(ColoredNode coloredNode) {
         StringBuilder res = new StringBuilder();
-        Double prevX = null, prevY = null;
-        System.out.println("Plotter.plotFunction: " + coloredNode.ast().toStringInfix());
+        Double prevXPos = null, prevYPos = null;
+//        System.out.println("Plotter.plotFunction: " + coloredNode.ast().toStringInfix());
         if (coloredNode.ast().toStringInfix().equals("0")) { //! not an elegant solution (Problem: Emtpy expressions should not be plotted)
             return res.toString(); // Skip empty expressions
         }
-        double stepSize = getStepSize();
-        for (double x = GlobalContext.XY_RANGE.xMin(); x <= GlobalContext.XY_RANGE.xMax(); x += stepSize) {
+        for (double x = xMin; x <= xMax; x += getStepSize()) {
             GlobalContext.VARIABLES.set("x", new ValueNode(x));
+            GlobalContext.VARIABLES.set("x", new ValueNode(scalingFunction.evaluate()));
             double y = coloredNode.ast().evaluate();
-            int xPos = (int) ((x - GlobalContext.XY_RANGE.xMin()) / (GlobalContext.XY_RANGE.xMax() - GlobalContext.XY_RANGE.xMin()) * GlobalContext.OUT_PUT_DIMENSION.width());
-            int yPos = (int) ((y - GlobalContext.XY_RANGE.yMin()) / (GlobalContext.XY_RANGE.yMax() - GlobalContext.XY_RANGE.yMin()) * GlobalContext.OUT_PUT_DIMENSION.height());
-            yPos = GlobalContext.OUT_PUT_DIMENSION.height() - yPos;
+            int currXPos = (int) ((x - xMin) / (xMax - xMin) * width);
+            int currYPos = height - (int) ((y - yMin) / (yMax - yMin) * height);
+//            currYPos = height - currYPos;
+            // TODO: clipping implementieren
+            boolean isPrevInBounds = prevYPos != null && prevYPos >= yMin && prevYPos <= yMax;
+            boolean isCurrInBounds = !(y <= yMin || y >= yMax || Double.isNaN(y));
 
-            if (y < GlobalContext.XY_RANGE.yMin() || y > GlobalContext.XY_RANGE.yMax() || Double.isNaN(y)) {
-                continue; // Skip points outside the y range
+            if (prevXPos != null && (isPrevInBounds || isCurrInBounds)) {
+                res.append("<line x1=\"").append(prevXPos.intValue())
+                    .append("\" y1=\"").append(prevYPos.intValue())
+                    .append("\" x2=\"").append(currXPos)
+                    .append("\" y2=\"").append(currYPos)
+                    .append("\" stroke=\"rgb(")
+                    .append(coloredNode.color().r).append(",")
+                    .append(coloredNode.color().g).append(",")
+                    .append(coloredNode.color().b)
+                    .append(")\" stroke-width=\"2\"/>\n");
             }
-            if (prevX != null && prevY != null) {
-                res.append("<line x1=\"").append(prevX.intValue())
-                        .append("\" y1=\"").append(prevY.intValue())
-                        .append("\" x2=\"").append(xPos)
-                        .append("\" y2=\"").append(yPos)
-                        .append("\" stroke=\"rgb(")
-                        .append(coloredNode.color().r).append(",")
-                        .append(coloredNode.color().g).append(",")
-                        .append(coloredNode.color().b)
-                        .append(")\" stroke-width=\"2\"/>\n");
-            }
-            prevX = (double) xPos;
-            prevY = (double) yPos;
+            prevXPos = (double) currXPos;
+            prevYPos = (double) currYPos;
         }
         return res.toString();
     }
 
+
     private static double getStepSize() {
         // Adjust step size based on the range and resolution
-        double range = GlobalContext.XY_RANGE.xMax() - GlobalContext.XY_RANGE.xMin();
-        return range / GlobalContext.OUT_PUT_DIMENSION.width(); // Step size based on width
+        double range = xMax - xMin;
+        return range / width; // Step size based on width
     }
 
 }

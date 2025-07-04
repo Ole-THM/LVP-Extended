@@ -5,7 +5,7 @@ public enum COLOR {
     GREEN(0, 255, 0),
     BLUE(0, 0, 255),
     YELLOW(255, 255, 0),
-    CYAN(0, 255, 255),
+    VIOLET(238, 130, 238),
     MAGENTA(255, 0, 255),
     ORANGE(255, 165, 0),
     PURPLE(128, 0, 128),
@@ -18,9 +18,9 @@ public enum COLOR {
     MAROON(128, 0, 0),
     GOLD(255, 215, 0),
     TURQUOISE(64, 224, 208),
-    VIOLET(238, 130, 238),
     INDIGO(75, 0, 130),
-    GRAY(128, 128, 128);
+    GRAY(128, 128, 128),
+    CYAN(0, 255, 255);
 
     public final int r, g, b;
 

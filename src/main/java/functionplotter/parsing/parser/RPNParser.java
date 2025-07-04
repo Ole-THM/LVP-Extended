@@ -14,7 +14,7 @@ public class RPNParser implements ParserI {
     private final Stack<ASTNodeI> stack = new Stack<>();
     private final Lexer lexer = new Lexer();
 
-    public ASTNodeI parse(String input) throws ParseException {
+    public AST parse(String input) throws ParseException {
         this.stack.clear();
         List<Token> tokens = this.lexer.tokenize(input);
         for (Token token : tokens) {
@@ -39,7 +39,7 @@ public class RPNParser implements ParserI {
                     } else { // Extension to support two args for the root function maybe added later
                         // For other functions, we assume they take one argument
                         left = this.safePop();
-                        System.out.println(left);
+//                        System.out.println(left);
 
                     }
                     List<ASTNodeI> args = new ArrayList<>(Arrays.asList(left, right));

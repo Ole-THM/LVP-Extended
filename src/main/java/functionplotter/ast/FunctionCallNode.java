@@ -1,6 +1,7 @@
 package functionplotter.ast;
 
 import java.util.List;
+import java.util.Objects;
 
 public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) implements ASTNodeI {
     @Override
@@ -48,4 +49,25 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
             default -> throw new UnsupportedOperationException("Unsupported function: " + functionName);
         };
     }
+
+    @Override
+    public String toDotGraph() {
+        return "\"" + this.getId() + "\" [label=\"" + this.name() + "\"];\n" +
+                this.arguments.stream()
+                        .filter(Objects::nonNull)
+                        .map(arg -> "\"" + this.getId() + "\" -> \"" + arg.getId() + "\";\n")
+                        .reduce("", String::concat)
+                + this.arguments.stream()
+                        .filter(Objects::nonNull)
+                        .map(ASTNodeI::toDotGraph)
+                        .reduce("", String::concat);
+    }
+
+    @Override
+    public String name() {
+        return this.functionName;
+    }
+
+    @Override
+    public String getId() { return "FunctionCallNode_" + System.identityHashCode(this); }
 }

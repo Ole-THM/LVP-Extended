@@ -6,11 +6,11 @@ public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) impleme
     @Override
     public double evaluate() {
         return switch (op) {
-            case PLUS -> this.left.evaluate() + this.right.evaluate();
-            case MINUS -> this.left.evaluate() - this.right.evaluate();
-            case MULTIPLY -> this.left.evaluate() * this.right.evaluate();
-            case DIVIDE -> this.left.evaluate() / this.right.evaluate();
-            case EXPONENT -> Math.pow(this.left.evaluate(), this.right.evaluate());
+            case PLUS -> left.evaluate() + right.evaluate();
+            case MINUS -> left.evaluate() - right.evaluate();
+            case MULTIPLY -> left.evaluate() * right.evaluate();
+            case DIVIDE -> left.evaluate() / right.evaluate();
+            case EXPONENT -> Math.pow(left.evaluate(), right.evaluate());
             default -> throw new UnsupportedOperationException("Unsupported operation: " + op);
         };
     }
@@ -23,15 +23,16 @@ public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) impleme
         String rightStr = right instanceof BinaryOpNode rNode && precedence(rNode.op()) <= precedence(this.op)
                 ? "(" + right.toStringInfix() + ")"
                 : right.toStringInfix();
-        return leftStr + " " + opToString(op) + " " + rightStr;
+        return leftStr + " " + name() + " " + rightStr;
     }
 
     @Override
     public String toStringRPN() {
-        return this.left.toStringRPN() + " " + this.right.toStringRPN() + " " + opToString(op);
+        return toStringRPN() + " " + toStringRPN() + " " + name();
     }
 
-    private String opToString(TOKEN_TYPE op) {
+    @Override
+    public String name() {
         return switch (op) {
             case PLUS -> "+";
             case MINUS -> "-";
@@ -50,4 +51,17 @@ public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) impleme
             default -> 0;
         };
     }
+
+    @Override
+    public String toDotGraph() {
+        return "\"" + this.getId() + "\" [label=\"" + name() + "\"];\n" +
+                "\"" + this.getId() + "\" -> \"" + left.getId() + "\";\n" +
+                "\"" + this.getId() + "\" -> \"" + right.getId() + "\";\n" +
+                left.toDotGraph() +
+                right.toDotGraph();
+
+    }
+
+    @Override
+    public String getId() { return "ValueNode_" + System.identityHashCode(this); }
 }

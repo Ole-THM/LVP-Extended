@@ -16,7 +16,6 @@
     <maven.compiler.release>23</maven.compiler.release>
   </properties>
 
-
   <build>
     <resources>
       <resource>

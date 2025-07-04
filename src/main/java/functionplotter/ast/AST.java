@@ -24,4 +24,24 @@ public record AST(ASTNodeI root) implements ASTNodeI {
         }
         return this.root.toStringRPN();
     }
+
+    @Override
+    public String toDotGraph() {
+        if (this.root == null) {
+            throw new IllegalStateException("AST root is not set.");
+        }
+//        System.out.println("diagraph AST {" + this.root.toDotGraph() + "}");
+        return "digraph AST {" + this.root.toDotGraph() + "}";
+    }
+
+    @Override
+    public String name() {
+        if (this.root == null) {
+            throw new IllegalStateException("AST root is not set.");
+        }
+        return this.root.name();
+    }
+
+    @Override
+    public String getId() { return "AST_" + System.identityHashCode(this); }
 }
