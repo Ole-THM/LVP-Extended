@@ -256,7 +256,7 @@ void main() throws ParseException {
         Diese Variable lässt sich nun in den Ausdrücken verwenden unter ihrem angegebenen Identifier (hier `v`).
         """);
 
-    String inputExprWithVar = "ln(X)"; // Ausdruck mit Variable
+    String inputExprWithVar = "x ln"; // Ausdruck mit Variable
     Clerk.write(
             Interaction.input(
                     "./src/main/java/start.java", "// Ausdruck mit Variable",
@@ -317,7 +317,7 @@ void main() throws ParseException {
         
         Hier ist es einem komplett freigestellt wie kreativ man mit der Skalierung sein möchte, grundlegend wird hier jeder Ausdruck funktionieren *solange er ein `x` enthält*, wie nützlich dies im Endeffekt ist, sei jedem selbst überlassen. Beispielsweise ist es möglich Kreisfunktionen als Skalierfunktion anzugeben, was natürlich wenig Sinn macht. 
         """);
-    String scalingFunctionTutorial = "e^x"; // Skalier Funktion Beispiel
+    String scalingFunctionTutorial = "x"; // Skalier Funktion Beispiel
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// Skalier Funktion Beispiel",
             "String scalingFunctionTutorial = \"$\";",
