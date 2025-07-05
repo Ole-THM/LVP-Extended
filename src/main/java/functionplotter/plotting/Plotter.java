@@ -3,13 +3,12 @@ package functionplotter.plotting;
 import functionplotter.ast.AST;
 import functionplotter.ast.ASTNodeI;
 import functionplotter.ast.ValueNode;
-import functionplotter.ast.VariableNode;
 import functionplotter.plotting.utils.ColoredNode;
 import functionplotter.plotting.utils.OutPutDimension;
 import functionplotter.plotting.utils.XYRange;
 import functionplotter.plotting.utils.XYRangeRecommender;
 import functionplotter.utils.GlobalContext;
-import functionplotter.utils.SCALINGS;
+import functionplotter.utils.SCALING;
 
 public class Plotter {
 
@@ -24,7 +23,7 @@ public class Plotter {
     static int height;
 
     static ASTNodeI scalingFunction;
-    static SCALINGS scaling;
+    static SCALING scaling;
 
     static ColoredNode[] coloredNodes;
 
@@ -43,7 +42,7 @@ public class Plotter {
             XYRange xyRange,
             OutPutDimension outPutDimension,
             AST scalingFunction,
-            SCALINGS scaling,
+            SCALING scaling,
             Boolean useSmartRange,
             ColoredNode...coloredNodes
     ) {

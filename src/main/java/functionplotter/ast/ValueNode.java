@@ -18,8 +18,7 @@ public record ValueNode(double value) implements ASTNodeI {
 
     @Override
     public String toDotGraph() {
-//        return "\"" + this.getId() + "\" [label=\"" + this.toStringInfix() + "\"];\n";
-        return "";
+        return "\"" + this.getId() + "\" [label=\"" + this.toStringInfix() + "\"];\n";
     }
 
     @Override

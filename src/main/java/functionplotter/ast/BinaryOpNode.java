@@ -27,9 +27,7 @@ public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) impleme
     }
 
     @Override
-    public String toStringRPN() {
-        return toStringRPN() + " " + toStringRPN() + " " + name();
-    }
+    public String toStringRPN() { return this.left.toStringRPN() + " " + this.right.toStringRPN() + " " + name(); }
 
     @Override
     public String name() {
@@ -39,7 +37,7 @@ public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) impleme
             case MULTIPLY -> "*";
             case DIVIDE -> "/";
             case EXPONENT -> "^";
-            default -> "?";
+            default -> "default";
         };
     }
 

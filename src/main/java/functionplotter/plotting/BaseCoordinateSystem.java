@@ -5,7 +5,7 @@ import functionplotter.ast.ValueNode;
 import functionplotter.plotting.utils.OutPutDimension;
 import functionplotter.plotting.utils.XYRange;
 import functionplotter.utils.GlobalContext;
-import functionplotter.utils.SCALINGS;
+import functionplotter.utils.SCALING;
 
 public class BaseCoordinateSystem {
 
@@ -21,14 +21,14 @@ public class BaseCoordinateSystem {
     static double yMax;
 
     static ASTNodeI scalingFunction;
-    static SCALINGS scalingType;
+    static SCALING scalingType;
 
     // Overloaded method for backward compatibility
     public static String genBase(XYRange xyRange, OutPutDimension outPutDimension, ASTNodeI scalingFun) {
         return genBase(xyRange, outPutDimension, scalingFun, null);
     }
 
-    public static String genBase(XYRange xyRange, OutPutDimension outPutDimension, ASTNodeI scalingFun, SCALINGS scaling) {
+    public static String genBase(XYRange xyRange, OutPutDimension outPutDimension, ASTNodeI scalingFun, SCALING scaling) {
         StringBuilder res = new StringBuilder();
         width = outPutDimension.width();
         height = outPutDimension.height();
@@ -87,11 +87,11 @@ public class BaseCoordinateSystem {
         // Start with a base value proportional to the range
         int baseValue;
 
-        if (scalingType == SCALINGS.LOGARITHMIC) {
+        if (scalingType == SCALING.LOGARITHMIC) {
             // For logarithmic scaling, use the log of the range
             double logRange = Math.log10(xMax) - Math.log10(Math.max(xMin, 0.0001));
             baseValue = (int) Math.ceil(logRange * 3);
-        } else if (scalingType == SCALINGS.TRIGONOMETRIC) {
+        } else if (scalingType == SCALING.TRIGONOMETRIC) {
             // For trigonometric scaling, consider multiples of PI
             double piRange = (xMax - xMin) / Math.PI;
             baseValue = (int) Math.ceil(piRange * 2);
@@ -123,7 +123,7 @@ public class BaseCoordinateSystem {
         double yStep = calculateGridStep((yMax - yMin) / targetLines);
 
         // vertical lines (x) - handle different scaling types
-        if (scalingType == SCALINGS.LOGARITHMIC) {
+        if (scalingType == SCALING.LOGARITHMIC) {
             // Use logarithmic scaling for x-axis
             double[] xPositions = calculateLogarithmicGridSteps(xMin, xMax, targetLines);
             for (double x : xPositions) {
@@ -137,7 +137,7 @@ public class BaseCoordinateSystem {
                         .append("\" style=\"stroke:rgb(200,200,200);stroke-width:2\"/>\n")
                         .append(drawVerticalLineGridLabel(x, xPos));
             }
-        } else if (scalingType == SCALINGS.TRIGONOMETRIC) {
+        } else if (scalingType == SCALING.TRIGONOMETRIC) {
             // Use trigonometric scaling for x-axis
             double[] xPositions = calculateTrigonometricGridSteps(xMin, xMax, targetLines);
             for (double x : xPositions) {
@@ -260,7 +260,7 @@ public class BaseCoordinateSystem {
         value = scalingFunction == null ? value : scalingFunction.evaluate();
 
         String label;
-        if (scalingType != SCALINGS.TRIGONOMETRIC) {
+        if (scalingType != SCALING.TRIGONOMETRIC) {
             // Default formatting for other scaling types
             label = String.valueOf(value)
                 .replaceAll("\\.0+$", "")
@@ -273,7 +273,7 @@ public class BaseCoordinateSystem {
                     label = label.replaceAll("(\\.\\d*?)0+$", "$1").replaceAll("\\.$", "");
                 }
             }
-        } else if (scalingType == SCALINGS.TRIGONOMETRIC) {
+        } else if (scalingType == SCALING.TRIGONOMETRIC) {
             // Format as multiples of PI
             double piMultiple = value / Math.PI;
             if (Math.abs(piMultiple) < 0.001) {

@@ -22,12 +22,62 @@ public class InfixParser implements ParserI {
         if (this.tokens.get(this.pos).type() == TOKEN_TYPE.EOF) {
             return new AST(new ValueNode(0)); // Leerer Ausdruck gibt 0 zurück
         }
-        AST result = new AST(parseExpression());
+        AST result = new AST(parseTernary());
         if (this.tokens.get(pos).type() != TOKEN_TYPE.EOF) {
             throw new ParseException("Unerwartete Tokens am Ende: " + peek(), pos);
         }
 //        System.out.println("InfixParser.parse: Finished parsing expression. Result: " + result);
         return result;
+    }
+
+    private ASTNodeI parseTernary() throws ParseException {
+        ASTNodeI condition = parseLogicalOr();
+
+        if (match(TOKEN_TYPE.QUESTION)) {
+            ASTNodeI trueValue = parseTernary(); // Rechts-assoziativ
+            expect(TOKEN_TYPE.COLON);
+            ASTNodeI falseValue = parseTernary(); // Rechts-assoziativ
+            return new TernaryOpNode(condition, trueValue, falseValue);
+        }
+
+        return condition;
+    }
+
+    private ASTNodeI parseLogicalOr() throws ParseException {
+        ASTNodeI left = parseLogicalAnd();
+
+        while (match(TOKEN_TYPE.OR)) {
+            TOKEN_TYPE operator = previous().type();
+            ASTNodeI right = parseLogicalAnd();
+            left = new BinaryLogicalOPNode(left, operator, right);
+        }
+
+        return left;
+    }
+
+    private ASTNodeI parseLogicalAnd() throws ParseException {
+        ASTNodeI left = parseComparison();
+
+        while (match(TOKEN_TYPE.AND)) {
+            TOKEN_TYPE operator = previous().type();
+            ASTNodeI right = parseComparison();
+            left = new BinaryLogicalOPNode(left, operator, right);
+        }
+
+        return left;
+    }
+
+    private ASTNodeI parseComparison() throws ParseException {
+        ASTNodeI left = parseExpression(); // Nutzt Ihre bestehende parseExpression()
+
+        if (match(TOKEN_TYPE.GT, TOKEN_TYPE.LT, TOKEN_TYPE.GTE,
+                TOKEN_TYPE.LTE, TOKEN_TYPE.EQ, TOKEN_TYPE.NEQ)) {
+            TOKEN_TYPE operator = previous().type();
+            ASTNodeI right = parseExpression();
+            return new BinaryLogicalOPNode(left, operator, right);
+        }
+
+        return left;
     }
 
     private ASTNodeI parseExpression() throws ParseException {

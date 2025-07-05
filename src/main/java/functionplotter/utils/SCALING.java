@@ -1,6 +1,6 @@
 package functionplotter.utils;
 
-public enum SCALINGS {
+public enum SCALING {
     LOGARITHMIC,
     TRIGONOMETRIC,
     NONE;

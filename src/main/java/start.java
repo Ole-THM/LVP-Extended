@@ -2,9 +2,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import functionplotter.ast.AST;
-import functionplotter.ast.ASTNodeI;
-import functionplotter.ast.VariableNode;
 import functionplotter.parsing.parser.Parser;
 import functionplotter.plotting.Plotter;
 import functionplotter.plotting.utils.ColoredNode;
@@ -16,7 +13,6 @@ import lvp.Clerk;
 import lvp.skills.Text;
 import lvp.skills.Interaction;
 import lvp.views.Dot;
-import lvp.views.Turtle;
 
 void main() throws ParseException {
 
@@ -24,8 +20,8 @@ void main() throws ParseException {
 
     // Display range
 
-    String xMin = "0"; // X-Achse Minimum
-    String xMax = "100"; // X-Achse Maximum
+    String xMin = "0 - pi * 4"; // X-Achse Minimum
+    String xMax = "4 * pi"; // X-Achse Maximum
     String yMin = "-5"; // Y-Achse Minimum
     String yMax = "5"; // Y-Achse Maximum
 
@@ -39,10 +35,10 @@ void main() throws ParseException {
 
     // Expressions
 
-    String func_1 = ""; // Funktion 1
-    String func_2 = "log (x)"; // Funktion 2
+    String func_1 = "x tan"; // Funktion 1
+    String func_2 = "c ? a : b"; // Funktion 2
     String func_3 = ""; // Funktion 3
-    String func_4 = "sin(x)"; // Funktion 4
+    String func_4 = ""; // Funktion 4
     String func_5 = ""; // Funktion 5
 
     String scalingFunction = "x"; // Skalier Funktion
@@ -60,9 +56,9 @@ void main() throws ParseException {
 
     // Variables
 
-    String var_1 = "tan (x)"; // Variable a
-    String var_2 = ""; // Variable b
-    String var_3 = ""; // Variable c
+    String var_1 = "sin(x) + 2"; // Variable a
+    String var_2 = "sin(x) - 2"; // Variable b
+    String var_3 = "sin(x) > sin(x - pi)"; // Variable c
     String var_4 = ""; // Variable d
     String var_5 = ""; // Variable e
 
@@ -92,9 +88,9 @@ void main() throws ParseException {
     boolean logScale = false; // Logarithmisch
     boolean trigScale = true; // Trigonometrisch
 
-    SCALINGS scale = scaleHandler(logScale, trigScale);
+    SCALING scale = scaleHandler(logScale, trigScale);
 
-    boolean useSmartRange = true; // Smart Range
+    boolean useSmartRange = false; // Smart Range
 
     // Titel und Einleitung
     Clerk.markdown("""
@@ -350,7 +346,7 @@ void main() throws ParseException {
     boolean logScaleTutorial = false; // Logarithmische Skalierung
     Boolean trigScaleTutorial = true; // Trigonometrische Skalierung
 
-    SCALINGS scaleTutorial = scaleHandler(logScaleTutorial, trigScaleTutorial);
+    SCALING scaleTutorial = scaleHandler(logScaleTutorial, trigScaleTutorial);
     Clerk.write(Interaction.checkbox(
         "./src/main/java/start.java", "// Logarithmische Skalierung",
         "Boolean logScaleTutorial = $;",
@@ -414,15 +410,15 @@ void main() throws ParseException {
         - [x] Bereichsauswahl, Zoom, etc.
         - [x] Logarithmische Achsen, (Benutzerdefinierte Skalierung)
         - [x] Automatische Bereichsauswahl
-        - [ ] Logische Ausdrücke (z.B. ternärer Operator)
+        - [x] Logische Ausdrücke (z.B. ternärer Operator)
         """);
 }
 
-private SCALINGS scaleHandler(boolean logScale, boolean trigScale) {
+private SCALING scaleHandler(boolean logScale, boolean trigScale) {
     if (logScale && trigScale) {
         System.out.println("Nur eine Skalierung kann gewählt werden");
-        return SCALINGS.NONE;
-    } else if (logScale) return SCALINGS.LOGARITHMIC;
-    else if (trigScale) return SCALINGS.TRIGONOMETRIC;
-    else return SCALINGS.NONE;
+        return SCALING.NONE;
+    } else if (logScale) return SCALING.LOGARITHMIC;
+    else if (trigScale) return SCALING.TRIGONOMETRIC;
+    else return SCALING.NONE;
 }

@@ -54,9 +54,27 @@ public class RPNParser implements ParserI {
                             new BinaryOpNode(left, token.type(), right)
                     );
                 }
+                case GT, LT, GTE, LTE, EQ, NEQ, AND, OR -> {
+                    ASTNodeI right = this.safePop();
+                    ASTNodeI left = this.safePop();
+                    this.stack.push(
+                            new BinaryLogicalOPNode(left, token.type(), right)
+                    );
+                }
                 case UNARYMINUS -> this.stack.push(
                         new UnaryOpNode(this.safePop(), token.type())
                 );
+                case NOT -> this.stack.push(
+                        new UnaryLogicalOpNode(this.safePop(), token.type())
+                );
+                case QUESTION -> {
+                    ASTNodeI falseValue = this.safePop();
+                    ASTNodeI trueValue = this.safePop();
+                    ASTNodeI condition = this.safePop();
+                    this.stack.push(
+                            new TernaryOpNode(condition, trueValue, falseValue)
+                    );
+                }
                 case EOF -> {}
                 default -> throw new ParseException("Unexpected Token: " + token.text(), 0);
             }
