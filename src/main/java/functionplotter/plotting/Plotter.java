@@ -52,7 +52,8 @@ public class Plotter {
 
     private static String plotFunction(ColoredNode coloredNode) {
         StringBuilder res = new StringBuilder();
-        Double prevXPos = null, prevYPos = null;
+        Integer prevXPos = null, prevYPos = null;
+        Double prevY = null;
 //        System.out.println("Plotter.plotFunction: " + coloredNode.ast().toStringInfix());
         if (coloredNode.ast().toStringInfix().equals("0")) { //! not an elegant solution (Problem: Emtpy expressions should not be plotted)
             return res.toString(); // Skip empty expressions
@@ -60,17 +61,19 @@ public class Plotter {
         for (double x = xMin; x <= xMax; x += getStepSize()) {
             GlobalContext.VARIABLES.set("x", new ValueNode(x));
             GlobalContext.VARIABLES.set("x", new ValueNode(scalingFunction.evaluate()));
-            double y = coloredNode.ast().evaluate();
+            double rawY = coloredNode.ast().evaluate();
+            boolean currInBounds = !Double.isNaN(rawY) && rawY >= yMin && rawY <= yMax;
+            boolean prevInBounds = prevY != null && !Double.isNaN(prevY) && prevY >= yMin && prevY <= yMax;
+
+            // Only clip after checking if the point is in bounds
+            double y = clipYVal(rawY);
             int currXPos = (int) ((x - xMin) / (xMax - xMin) * width);
             int currYPos = height - (int) ((y - yMin) / (yMax - yMin) * height);
-//            currYPos = height - currYPos;
-            // TODO: clipping implementieren
-            boolean isPrevInBounds = prevYPos != null && prevYPos >= yMin && prevYPos <= yMax;
-            boolean isCurrInBounds = !(y <= yMin || y >= yMax || Double.isNaN(y));
 
-            if (prevXPos != null && (isPrevInBounds || isCurrInBounds)) {
-                res.append("<line x1=\"").append(prevXPos.intValue())
-                    .append("\" y1=\"").append(prevYPos.intValue())
+            // Draw line only if both points are not NaN and at least one point is in bounds
+            if (prevXPos != null && !Double.isNaN(rawY) && !Double.isNaN(prevY) && (currInBounds || prevInBounds)) {
+                res.append("<line x1=\"").append(prevXPos)
+                    .append("\" y1=\"").append(prevYPos)
                     .append("\" x2=\"").append(currXPos)
                     .append("\" y2=\"").append(currYPos)
                     .append("\" stroke=\"rgb(")
@@ -79,12 +82,19 @@ public class Plotter {
                     .append(coloredNode.color().b)
                     .append(")\" stroke-width=\"2\"/>\n");
             }
-            prevXPos = (double) currXPos;
-            prevYPos = (double) currYPos;
+            prevXPos = currXPos;
+            prevYPos = currYPos;
+            prevY = rawY;
         }
         return res.toString();
     }
 
+    private static Double clipYVal(Double YPos) {
+        if (Double.isNaN(YPos)) return YPos; // Return NaN unchanged
+        if (YPos > yMax) return yMax;
+        if (YPos < yMin) return yMin;
+        return YPos;
+    }
 
     private static double getStepSize() {
         // Adjust step size based on the range and resolution

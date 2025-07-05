@@ -41,10 +41,10 @@ void main() throws ParseException {
 
     // Expressions
 
-    String func_1 = "sin(x)*x"; // Funktion 1
-    String func_2 = "x sin tan"; // Funktion 2
+    String func_1 = "tan(x)"; // Funktion 1
+    String func_2 = ""; // Funktion 2
     String func_3 = ""; // Funktion 3
-    String func_4 = ""; // Funktion 4
+    String func_4 = "x sqrt"; // Funktion 4
     String func_5 = ""; // Funktion 5
 
     String scalingFunction = "x"; // Skalier Funktion
