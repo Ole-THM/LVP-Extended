@@ -15,7 +15,8 @@ public class Variables {
         this.variables = new ArrayList<>();
         this.add(
             new Variable("e", new AST(new ValueNode(Math.E))),
-            new Variable("pi", new AST(new ValueNode(Math.PI)))
+            new Variable("pi", new AST(new ValueNode(Math.PI))),
+            new Variable("x", new AST(new ValueNode(1)))
         );
     }
 

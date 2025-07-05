@@ -7,42 +7,68 @@ import functionplotter.ast.VariableNode;
 import functionplotter.plotting.utils.ColoredNode;
 import functionplotter.plotting.utils.OutPutDimension;
 import functionplotter.plotting.utils.XYRange;
+import functionplotter.plotting.utils.XYRangeRecommender;
 import functionplotter.utils.GlobalContext;
+import functionplotter.utils.SCALINGS;
 
 public class Plotter {
 
-    static int width;
-    static int height;
-
+    static XYRange xyRange;
     static double xMin;
     static double xMax;
     static double yMin;
     static double yMax;
 
+    static OutPutDimension outPutDimension;
+    static int width;
+    static int height;
+
     static ASTNodeI scalingFunction;
+    static SCALINGS scaling;
 
-    public static String plot(XYRange xyRange, OutPutDimension outPutDimension, ColoredNode...coloredNodes) {
-        return plot(xyRange, outPutDimension, new AST(new VariableNode("x")), coloredNodes);
-    }
+    static ColoredNode[] coloredNodes;
 
-    public static String plot(XYRange xyRange, OutPutDimension outPutDimension, ASTNodeI scalingFun, ColoredNode...coloredNodes) {
+    /**
+     * Handler Function that sets all the relevant class Variables and calls the actual logic to plot which relies on these here set Values
+     *
+     * @param xyRange User defined X and Y Ranges
+     * @param outPutDimension Dimensions of the output Image
+     * @param scalingFunction User defined scaling Function for the X Axis
+     * @param scaling User selected scaling Function (takes priority over the scalingFunction)
+     * @param useSmartRange Tells the Plotter to use the User defined Range or calculate a custom one
+     * @param coloredNodes Array of all the ASTs and the colors in which they are going to be plotted
+     */
 
+    public static String plot(
+            XYRange xyRange,
+            OutPutDimension outPutDimension,
+            AST scalingFunction,
+            SCALINGS scaling,
+            Boolean useSmartRange,
+            ColoredNode...coloredNodes
+    ) {
+        Plotter.xyRange = useSmartRange ? XYRangeRecommender.recommendRange(coloredNodes) : xyRange;
+        xMin = Plotter.xyRange.xMin();
+        xMax = Plotter.xyRange.xMax();
+        yMin = Plotter.xyRange.yMin();
+        yMax = Plotter.xyRange.yMax();
+        Plotter.outPutDimension = outPutDimension;
         width = outPutDimension.width();
         height = outPutDimension.height();
+        Plotter.scalingFunction = scalingFunction;
+        Plotter.scaling = scaling;
+        Plotter.coloredNodes = coloredNodes;
+        return plot();
+    }
 
-        xMin = xyRange.xMin();
-        xMax = xyRange.xMax();
-        yMin = xyRange.yMin();
-        yMax = xyRange.yMax();
-
-        scalingFunction = scalingFun;
+    private static String plot() {
 
         StringBuilder res = new StringBuilder();
         // Set the viewBox and preserveAspectRatio attributes
         res.append("<svg width=\"").append(width).append("\" height=\"").append(height)
                 .append("\" viewBox=\"0 0 ").append(width).append(" ").append(height)
                 .append("\" preserveAspectRatio=\"xMidYMid meet\" xmlns=\"http://www.w3.org/2000/svg\">\n");
-        res.append(BaseCoordinateSystem.genBase(xyRange, outPutDimension, scalingFun));
+        res.append(BaseCoordinateSystem.genBase(xyRange, outPutDimension, scalingFunction, scaling));
         for (ColoredNode node : coloredNodes) {
             res.append(plotFunction(node));
         }
@@ -60,7 +86,10 @@ public class Plotter {
         }
         for (double x = xMin; x <= xMax; x += getStepSize()) {
             GlobalContext.VARIABLES.set("x", new ValueNode(x));
-            GlobalContext.VARIABLES.set("x", new ValueNode(scalingFunction.evaluate()));
+            // Only apply scaling function if scaling is null
+            if (scaling == null) {
+                GlobalContext.VARIABLES.set("x", new ValueNode(scalingFunction.evaluate()));
+            }
             double rawY = coloredNode.ast().evaluate();
             boolean currInBounds = !Double.isNaN(rawY) && rawY >= yMin && rawY <= yMax;
             boolean prevInBounds = prevY != null && !Double.isNaN(prevY) && prevY >= yMin && prevY <= yMax;

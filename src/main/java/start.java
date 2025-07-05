@@ -10,16 +10,13 @@ import functionplotter.plotting.Plotter;
 import functionplotter.plotting.utils.ColoredNode;
 import functionplotter.plotting.utils.OutPutDimension;
 import functionplotter.plotting.utils.XYRange;
-import functionplotter.utils.ColorPicker;
-import functionplotter.utils.Variable;
-import functionplotter.utils.Variables;
+import functionplotter.plotting.utils.XYRangeRecommender;
+import functionplotter.utils.*;
 import lvp.Clerk;
 import lvp.skills.Text;
 import lvp.skills.Interaction;
 import lvp.views.Dot;
 import lvp.views.Turtle;
-
-import functionplotter.utils.GlobalContext;
 
 void main() throws ParseException {
 
@@ -27,24 +24,25 @@ void main() throws ParseException {
 
     // Display range
 
-    double xMin = -10; // X-Achse Minimum
-    double xMax = 10; // X-Achse Maximum
-    double yMin = -5; // Y-Achse Minimum
-    double yMax = 5; // Y-Achse Maximum
+    String xMin = "0"; // X-Achse Minimum
+    String xMax = "100"; // X-Achse Maximum
+    String yMin = "-5"; // Y-Achse Minimum
+    String yMax = "5"; // Y-Achse Maximum
 
-    GlobalContext.XY_RANGE = new XYRange(
-            xMin,
-            xMax,
-            yMin,
-            yMax
+
+    XYRange xyRange = new XYRange(
+        Parser.parse(xMin).evaluate(),
+        Parser.parse(xMax).evaluate(),
+        Parser.parse(yMin).evaluate(),
+        Parser.parse(yMax).evaluate()
     );
 
     // Expressions
 
-    String func_1 = "tan(x)"; // Funktion 1
-    String func_2 = ""; // Funktion 2
+    String func_1 = ""; // Funktion 1
+    String func_2 = "log (x)"; // Funktion 2
     String func_3 = ""; // Funktion 3
-    String func_4 = "x sqrt"; // Funktion 4
+    String func_4 = "sin(x)"; // Funktion 4
     String func_5 = ""; // Funktion 5
 
     String scalingFunction = "x"; // Skalier Funktion
@@ -91,6 +89,13 @@ void main() throws ParseException {
             )
     );
 
+    boolean logScale = false; // Logarithmisch
+    boolean trigScale = true; // Trigonometrisch
+
+    SCALINGS scale = scaleHandler(logScale, trigScale);
+
+    boolean useSmartRange = true; // Smart Range
+
     // Titel und Einleitung
     Clerk.markdown("""
         # Funktionsplotter – Demo
@@ -109,10 +114,10 @@ void main() throws ParseException {
         ### Funktionen
         """);
 
-    GlobalContext.EXPRESSIONS = expressions.stream().map(expr -> {
+    ColoredNode[] expressionsAsColoredNodes = expressions.stream().map(expr -> {
         try {
             return new ColoredNode(
-                    (AST) Parser.parse(expr),
+                    Parser.parse(expr),
                     ColorPicker.getNextColor()
             );
         } catch (ParseException e) {
@@ -140,12 +145,15 @@ void main() throws ParseException {
 
     // Plot
 
-    GlobalContext.OUTPUT_STRING.append(
+    StringBuilder outPutString = new StringBuilder();
+    outPutString.append(
             Plotter.plot(
-                    GlobalContext.XY_RANGE,
-                    GlobalContext.OUT_PUT_DIMENSION,
+                    xyRange,
+                    new OutPutDimension(1000,700),
                     Parser.parse(scalingFunction),
-                    GlobalContext.EXPRESSIONS
+                    scale,
+                    useSmartRange,
+                    expressionsAsColoredNodes
             )
     );
 
@@ -154,7 +162,7 @@ void main() throws ParseException {
         """);
 
     Clerk.markdown(
-            GlobalContext.OUTPUT_STRING.toString()
+            outPutString.toString()
     );
 
     // Settings
@@ -164,18 +172,26 @@ void main() throws ParseException {
         """);
 
 
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// X-Achse Minimum", "double xMin = $;", "" + xMin));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// X-Achse Maximum", "double xMax = $;", "" + xMax));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Y-Achse Minimum", "double yMin = $;", "" + yMin));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Y-Achse Maximum", "double yMax = $;", "" + yMax));
+    Clerk.write(Interaction.input("./src/main/java/start.java", "// X-Achse Minimum", "String xMin = \"$\";", xMin));
+    Clerk.write(Interaction.input("./src/main/java/start.java", "// X-Achse Maximum", "String xMax = \"$\";", xMax));
+    Clerk.write(Interaction.input("./src/main/java/start.java", "// Y-Achse Minimum", "String yMin = \"$\";", yMin));
+    Clerk.write(Interaction.input("./src/main/java/start.java", "// Y-Achse Maximum", "String yMax = \"$\";", yMax));
 
     Clerk.markdown("""
         ##
         """);
 
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Skalier Funktion", "String scalingFunction = $;", "x"));
-    // Dot Graph
+    Clerk.write(Interaction.input("./src/main/java/start.java", "// Skalier Funktion", "String scalingFunction = \"$\";", "x"));
 
+    Clerk.markdown("""
+        ##
+        """);
+
+    Clerk.write(Interaction.checkbox("./src/main/java/start.java", "// Logarithmisch", "boolean logScale = $;", logScale));
+    Clerk.write(Interaction.checkbox("./src/main/java/start.java", "// Trigonometrisch", "boolean trigScale = $;", trigScale));
+    Clerk.write(Interaction.checkbox("./src/main/java/start.java", "// Smart Range", "boolean useSmartRange = $;", useSmartRange));
+
+    // Dot Graph
 
     Clerk.markdown("""
         ### Dot Graph Darstellungen
@@ -185,31 +201,31 @@ void main() throws ParseException {
         ### 1. Funktion:
         """);
     Dot dotGraphFunc_1 = new Dot();
-    dotGraphFunc_1.draw(GlobalContext.EXPRESSIONS[0].ast().toDotGraph());
+    dotGraphFunc_1.draw(expressionsAsColoredNodes[0].ast().toDotGraph());
 
     Clerk.markdown("""
         ### 2. Funktion:
         """);
     Dot dotGraphFunc_2 = new Dot();
-    dotGraphFunc_2.draw(GlobalContext.EXPRESSIONS[1].ast().toDotGraph());
+    dotGraphFunc_2.draw(expressionsAsColoredNodes[1].ast().toDotGraph());
 
     Clerk.markdown("""
         ### 3. Funktion:
         """);
     Dot dotGraphFunc_3 = new Dot();
-    dotGraphFunc_3.draw(GlobalContext.EXPRESSIONS[2].ast().toDotGraph());
+    dotGraphFunc_3.draw(expressionsAsColoredNodes[2].ast().toDotGraph());
 
     Clerk.markdown("""
         ### 4. Funktion:
         """);
     Dot dotGraphFunc_4 = new Dot();
-    dotGraphFunc_4.draw(GlobalContext.EXPRESSIONS[3].ast().toDotGraph());
+    dotGraphFunc_4.draw(expressionsAsColoredNodes[3].ast().toDotGraph());
 
     Clerk.markdown("""
         ### 5. Funktion:
         """);
     Dot dotGraphFunc_5 = new Dot();
-    dotGraphFunc_5.draw(GlobalContext.EXPRESSIONS[4].ast().toDotGraph());
+    dotGraphFunc_5.draw(expressionsAsColoredNodes[4].ast().toDotGraph());
 
     // Div: Input
     Clerk.markdown("""
@@ -256,7 +272,7 @@ void main() throws ParseException {
         Diese Variable lässt sich nun in den Ausdrücken verwenden unter ihrem angegebenen Identifier (hier `v`).
         """);
 
-    String inputExprWithVar = "x ln"; // Ausdruck mit Variable
+    String inputExprWithVar = "x sin"; // Ausdruck mit Variable
     Clerk.write(
             Interaction.input(
                     "./src/main/java/start.java", "// Ausdruck mit Variable",
@@ -283,26 +299,26 @@ void main() throws ParseException {
         Mit den Folgenden Eingabefeldern lassen sich Werte und Definitions bereich der zu plottenden Ausdrücke manuell einstellen
         """);
 
-    double xMinTutorial = 0; // X-Achse Min
-    double xMaxTutorial = 4; // X-Achse Max
-    double yMinTutorial = -10; // Y-Achse Min
-    double yMaxTutorial = 10; // Y-Achse Max
+    String xMinTutorial = "- 4 * pi"; // X-Achse Min
+    String xMaxTutorial = "4 * pi"; // X-Achse Max
+    String yMinTutorial = "-10"; // Y-Achse Min
+    String yMaxTutorial = "10"; // Y-Achse Max
 
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// X-Achse Min",
-            "double xMinTutorial = $;",
+            "String xMinTutorial = \"$\";",
             "" + xMinTutorial));
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// X-Achse Max",
-            "double xMaxTutorial = $;",
+            "String xMaxTutorial = \"$\";",
             "" + xMaxTutorial));
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// Y-Achse Min",
-            "double yMinTutorial = $;",
+            "String yMinTutorial = \"$\";",
             "" + yMinTutorial));
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// Y-Achse Max",
-            "double yMaxTutorial = $;",
+            "String yMaxTutorial = \"$\";",
             "" + yMaxTutorial));
 
     Clerk.markdown("""
@@ -315,7 +331,15 @@ void main() throws ParseException {
         
         - Um beispielsweise eine logarithmische Skalierung zu bewirken, so würde man die Umkehrfunktion des Logarithmus' angeben: `10^x`.
         
-        Hier ist es einem komplett freigestellt wie kreativ man mit der Skalierung sein möchte, grundlegend wird hier jeder Ausdruck funktionieren *solange er ein `x` enthält*, wie nützlich dies im Endeffekt ist, sei jedem selbst überlassen. Beispielsweise ist es möglich Kreisfunktionen als Skalierfunktion anzugeben, was natürlich wenig Sinn macht. 
+        Hier ist es einem komplett freigestellt wie kreativ man mit der Skalierung sein möchte, 
+        grundlegend wird hier jeder Ausdruck funktionieren *solange er ein `x` enthält*, 
+        wie nützlich dies im Endeffekt ist, sei jedem selbst überlassen. 
+        Beispielsweise ist es möglich Kreisfunktionen als Skalierfunktion anzugeben, was natürlich wenig Sinn macht.
+        Dementsprechend wird der Definitionsbereich auch automatisch umgestellt,
+        da es in manchen Fällen unmöglich ist Nutzereingaben zu übernehmen. 
+        Zum Beispiel lassen sich für eine Skalierungsfunktion wie `sin(x)` keine x Werte plotten, 
+        welche größer als `1` oder kleiner als `-1` sind.
+        Aus diesem Grund werden vorgefertigte Skalierungen wie `logarithmisch` und Skalierungen für `Kreisfunktionen` bereitgestellt.
         """);
     String scalingFunctionTutorial = "x"; // Skalier Funktion Beispiel
     Clerk.write(Interaction.input(
@@ -323,23 +347,58 @@ void main() throws ParseException {
             "String scalingFunctionTutorial = \"$\";",
             scalingFunctionTutorial.equals("") ? "x" : scalingFunctionTutorial));
 
+    boolean logScaleTutorial = false; // Logarithmische Skalierung
+    Boolean trigScaleTutorial = true; // Trigonometrische Skalierung
 
+    SCALINGS scaleTutorial = scaleHandler(logScaleTutorial, trigScaleTutorial);
+    Clerk.write(Interaction.checkbox(
+        "./src/main/java/start.java", "// Logarithmische Skalierung",
+        "Boolean logScaleTutorial = $;",
+        logScaleTutorial
+    ));
+    Clerk.write(Interaction.checkbox(
+        "./src/main/java/start.java", "// Trigonometrische Skalierung",
+        "Boolean trigScaleTutorial = $;",
+        trigScaleTutorial
+    ));
+
+    Clerk.markdown("""
+        ### 3.3 Automatischer Werte- und Definitions-Bereich
+        Mit der Angabe von `Smart Range` lässt sich einstellen, ob der manuel eingegebene Bereich verwendet wird, oder ob das Programm selbst einen Bereich ermitteln soll
+        """);
+
+    Boolean useSmartRangeTutorial = true; // Use Smart Range
+
+    Clerk.write(Interaction.checkbox(
+        "./src/main/java/start.java", "// Use Smart Range",
+        "Boolean useSmartRangeTutorial = $;",
+        useSmartRangeTutorial
+    ));
     // Div: Display
     Clerk.markdown(Text.fillOut("""
         ## 4. Funktionsplot im Koordinatensystem
         Die Funktion wird im Bereich x = `${0}` bis x = `${1}` geplottet.
-        """, xMinTutorial, xMaxTutorial)
-    );
+        """, useSmartRangeTutorial
+                ? XYRangeRecommender.recommendRange(Parser.parse(inputExprWithVar)).xMin()
+                : xMinTutorial,
+            useSmartRangeTutorial
+                ? XYRangeRecommender.recommendRange(Parser.parse(inputExprWithVar)).xMax()
+                : xMaxTutorial
+    ));
 
     // Plotter Output
     Clerk.markdown(
             Plotter.plot(
                     new XYRange(
-                            xMinTutorial, xMaxTutorial,
-                            yMinTutorial, yMaxTutorial
+                            Parser.parse(xMinTutorial).evaluate(),
+                            Parser.parse(xMaxTutorial).evaluate(),
+                            Parser.parse(yMinTutorial).evaluate(),
+                            Parser.parse(yMaxTutorial).evaluate()
                     ),
                     new OutPutDimension(1000, 700),
                     Parser.parse(scalingFunctionTutorial),
+                    scaleTutorial,
+                    useSmartRangeTutorial,
                     new ColoredNode(
                             Parser.parse(inputExprWithVar),
                             ColorPicker.getNextColor()
@@ -350,19 +409,20 @@ void main() throws ParseException {
     // Div: Extensions
     Clerk.markdown("""
         ## 5. Erweiterungen (optional)
-        - [X] Mehrere Funktionen gleichzeitig plotten
-        - [X] Parameter einstellbar machen
-        - [X] Bereichsauswahl, Zoom, etc.
-        - [X] Logarithmische Achsen, (Benutzerdefinierte Skalierung)
-        - [ ] Automatische Bereichsauswahl
+        - [x] Mehrere Funktionen gleichzeitig plotten
+        - [x] Parameter einstellbar machen
+        - [x] Bereichsauswahl, Zoom, etc.
+        - [x] Logarithmische Achsen, (Benutzerdefinierte Skalierung)
+        - [x] Automatische Bereichsauswahl
         - [ ] Logische Ausdrücke (z.B. ternärer Operator)
         """);
+}
 
-    // Abschnitt: Hinweise zur Umsetzung
-    Clerk.markdown("""
-        ---
-        **Hinweis:**
-        Diese Datei ist als Outline gedacht.  
-        Ersetzen Sie die Platzhalter durch Ihre eigene Logik (Tokenizer, Parser, AST, Plotter, etc.).
-        """);
+private SCALINGS scaleHandler(boolean logScale, boolean trigScale) {
+    if (logScale && trigScale) {
+        System.out.println("Nur eine Skalierung kann gewählt werden");
+        return SCALINGS.NONE;
+    } else if (logScale) return SCALINGS.LOGARITHMIC;
+    else if (trigScale) return SCALINGS.TRIGONOMETRIC;
+    else return SCALINGS.NONE;
 }
