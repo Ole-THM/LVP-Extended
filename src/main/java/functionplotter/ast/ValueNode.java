@@ -1,6 +1,12 @@
 package functionplotter.ast;
 
+import javax.management.ValueExp;
+
 public record ValueNode(double value) implements ASTNodeI {
+
+    @Override
+    public ASTNodeI copy() { return new ValueNode(this.value); }
+
     @Override
     public double evaluate() {
         return this.value;

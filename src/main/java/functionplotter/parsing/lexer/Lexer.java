@@ -116,7 +116,7 @@ public class Lexer {
         while (pos < input.length() && (Character.isLetterOrDigit(input.charAt(pos)) || input.charAt(pos) == '_')) pos++;
         String text = input.substring(start, pos);
 
-        if (text.matches("sin|cos|tan|log|ln|sqrt")) {
+        if (text.matches("sin|cos|tan|log|ln|sqrt|abs")) {
             return new Token(TOKEN_TYPE.FUNCTION, text);
         } else {
             return new Token(TOKEN_TYPE.IDENTIFIER, text);

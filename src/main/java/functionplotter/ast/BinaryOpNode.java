@@ -2,7 +2,13 @@ package functionplotter.ast;
 
 import functionplotter.utils.TOKEN_TYPE;
 
+import java.text.ParseException;
+
 public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) implements ASTNodeI {
+
+    @Override
+    public ASTNodeI copy() { return new BinaryOpNode(this.left.copy(), this.op, this.right.copy()); }
+
     @Override
     public double evaluate() {
         return switch (op) {

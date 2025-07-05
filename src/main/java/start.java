@@ -25,7 +25,6 @@ void main() throws ParseException {
     String yMin = "-5"; // Y-Achse Minimum
     String yMax = "5"; // Y-Achse Maximum
 
-
     XYRange xyRange = new XYRange(
         Parser.parse(xMin).evaluate(),
         Parser.parse(xMax).evaluate(),
@@ -35,9 +34,10 @@ void main() throws ParseException {
 
     // Expressions
 
+    String complexExpression = "!(x > 0 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+1, 2) * sqrt(abs(a)) : tan(x) + ln(a)) && (b <= 5 || c != 3) ? (¯x + a*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
     String func_1 = "x tan"; // Funktion 1
     String func_2 = "c ? a : b"; // Funktion 2
-    String func_3 = ""; // Funktion 3
+    String func_3 = "!(x > 0 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+1, 2) * sqrt(abs(a)) : tan(x) + ln(a)) && (b <= 5 || c != 3) ? (¯x + a*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))"; // Funktion 3
     String func_4 = ""; // Funktion 4
     String func_5 = ""; // Funktion 5
 
@@ -268,7 +268,7 @@ void main() throws ParseException {
         Diese Variable lässt sich nun in den Ausdrücken verwenden unter ihrem angegebenen Identifier (hier `v`).
         """);
 
-    String inputExprWithVar = "x sin"; // Ausdruck mit Variable
+    String inputExprWithVar = "v sin"; // Ausdruck mit Variable
     Clerk.write(
             Interaction.input(
                     "./src/main/java/start.java", "// Ausdruck mit Variable",

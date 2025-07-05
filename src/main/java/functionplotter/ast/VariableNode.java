@@ -2,7 +2,12 @@ package functionplotter.ast;
 
 import functionplotter.utils.GlobalContext;
 
+
 public record VariableNode(String name) implements ASTNodeI {
+
+    @Override
+    public ASTNodeI copy() { return new VariableNode(this.name()); }
+
     @Override
     public double evaluate() {
         return GlobalContext.VARIABLES.getOrDefault(this.name).ast().evaluate();
@@ -15,15 +20,27 @@ public record VariableNode(String name) implements ASTNodeI {
     public String toStringRPN() { return GlobalContext.VARIABLES.getOrDefault(this.name).toStringRPN(); }
 
     @Override
-public String toDotGraph() {
-    ASTNodeI root = GlobalContext.VARIABLES.getOrDefault(this.name).ast().root();
-    if (root instanceof ValueNode) {
-        return "\"" + this.getId() + "\" [label=\"" + this.name() + "\"];\n";
+    public String toDotGraph() {
+        ASTNodeI root = GlobalContext.VARIABLES.getOrDefault(this.name).ast().root().copy();
+
+        // Eigenen Knoten definieren
+        String res = "\"" + this.getId() + "\" [label=\"" + this.name() + "\"];\n";
+
+        if (root instanceof ValueNode) {
+            return res +
+                    (this.name().equals("x")
+                            ? ""
+                            :
+                            "\"" + this.getId() + "\" -> \"" + root.getId() + "\";\n" +
+                                    root.toDotGraph()
+                    );
+        }
+
+        res += "\"" + this.getId() + "\" -> \"" + root.getId() + "\";\n";
+
+        return res + root.toDotGraph();
     }
-    return "\"" + this.getId() + "\" [label=\"" + this.name() + "\"];\n"
-         + "\"" + this.getId() + "\" -> \"" + root.getId() + "\";\n"
-         + root.toDotGraph();
-}
+
 
     @Override
     public String name() { return name; }

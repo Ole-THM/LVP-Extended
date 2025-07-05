@@ -3,7 +3,12 @@ package functionplotter.ast;
 
 import functionplotter.utils.TOKEN_TYPE;
 
+import java.text.ParseException;
+
 public record BinaryLogicalOPNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) implements ASTNodeI {
+
+    @Override
+    public ASTNodeI copy() { return new BinaryLogicalOPNode(this.left.copy(), this.op, this.right.copy()); }
 
     @Override
     public double evaluate() {

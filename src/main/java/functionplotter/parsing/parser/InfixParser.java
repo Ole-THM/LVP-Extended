@@ -31,8 +31,8 @@ public class InfixParser implements ParserI {
     }
 
     private ASTNodeI parseTernary() throws ParseException {
+//        System.out.println("InfixParse.parseTernary: parsing Ternary at position: " + this.pos);
         ASTNodeI condition = parseLogicalOr();
-
         if (match(TOKEN_TYPE.QUESTION)) {
             ASTNodeI trueValue = parseTernary(); // Rechts-assoziativ
             expect(TOKEN_TYPE.COLON);
@@ -44,6 +44,7 @@ public class InfixParser implements ParserI {
     }
 
     private ASTNodeI parseLogicalOr() throws ParseException {
+//        System.out.println("InfixParse.parseLogicalOr: parsing Logical Or at position: " + this.pos);
         ASTNodeI left = parseLogicalAnd();
 
         while (match(TOKEN_TYPE.OR)) {
@@ -56,6 +57,7 @@ public class InfixParser implements ParserI {
     }
 
     private ASTNodeI parseLogicalAnd() throws ParseException {
+//        System.out.println("InfixParse.parseLogicalAnd: parsing Logical And at position: " + this.pos);
         ASTNodeI left = parseComparison();
 
         while (match(TOKEN_TYPE.AND)) {
@@ -68,6 +70,7 @@ public class InfixParser implements ParserI {
     }
 
     private ASTNodeI parseComparison() throws ParseException {
+//        System.out.println("InfixParse.parseComparison: parsing Comparison at position: " + this.pos);
         ASTNodeI left = parseExpression(); // Nutzt Ihre bestehende parseExpression()
 
         if (match(TOKEN_TYPE.GT, TOKEN_TYPE.LT, TOKEN_TYPE.GTE,
@@ -114,6 +117,9 @@ public class InfixParser implements ParserI {
     }
     private ASTNodeI parsePrimary() throws ParseException {
 //        System.out.println("InfixParser.parsePrimary: Parsing primary at position: " + pos);
+        if (match(TOKEN_TYPE.NOT)) {
+            return new UnaryLogicalOpNode(parseFactor(), TOKEN_TYPE.NOT);
+        }
         if (match(TOKEN_TYPE.UNARYMINUS, TOKEN_TYPE.MINUS)) {
             // -x wird als UnaryOpNode gespeichert
             return new UnaryOpNode(parseFactor(), TOKEN_TYPE.UNARYMINUS);
@@ -125,7 +131,7 @@ public class InfixParser implements ParserI {
             return new VariableNode(previous().text());
         }
         if (match(TOKEN_TYPE.OPENPARENTHESIS)) {
-            ASTNodeI expr = parseExpression();
+            ASTNodeI expr = parseTernary();
             expect(TOKEN_TYPE.CLOSEPARENTHESIS);
             return expr;
         }
@@ -139,10 +145,10 @@ public class InfixParser implements ParserI {
 //        System.out.println("InfixParser.parseFunctionCall: Parsing function call at position: " + pos);
         String funcName = previous().text();
         expect(TOKEN_TYPE.OPENPARENTHESIS);
-        ASTNodeI firstArg = parseExpression();
+        ASTNodeI firstArg = parseTernary();
         ASTNodeI secondArg = null;
         if (match(TOKEN_TYPE.COMMA)) {
-            secondArg = parseExpression();
+            secondArg = parseTernary();
         }
         List<ASTNodeI> args = new ArrayList<>(Arrays.asList(firstArg, secondArg));
         expect(TOKEN_TYPE.CLOSEPARENTHESIS);

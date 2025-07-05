@@ -1,6 +1,12 @@
 package functionplotter.ast;
 
+import java.text.ParseException;
+
 public record TernaryOpNode(ASTNodeI condition, ASTNodeI trueValue, ASTNodeI falseValue) implements ASTNodeI {
+
+    @Override
+    public ASTNodeI copy() { return new TernaryOpNode(this.condition.copy(), this.trueValue.copy(), this.falseValue.copy()); }
+
     @Override
     public double evaluate() { return condition.evaluate() > 0 ? trueValue.evaluate() : falseValue.evaluate(); }
 
@@ -20,9 +26,9 @@ public record TernaryOpNode(ASTNodeI condition, ASTNodeI trueValue, ASTNodeI fal
         return "\"" + this.getId() + "\" [label=\"" + name() + "\"];\n" +
                 "\"" + this.getId() + "\" -> \"" + condition.getId() + "\";\n" +
                 condition.toDotGraph() +
-                "\"" + condition.getId() + "\" -> \"" + trueValue.getId() + "\";\n" +
-                "\"" + condition.getId() + "\" -> \"" + falseValue.getId() + "\";\n" +
+                "\"" + this.getId() + "\" -> \"" + trueValue.getId() + "\";\n" +
                 trueValue.toDotGraph() +
+                "\"" + this.getId() + "\" -> \"" + falseValue.getId() + "\";\n" +
                 falseValue.toDotGraph();
     }
 
