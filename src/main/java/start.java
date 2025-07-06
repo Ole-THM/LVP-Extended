@@ -20,8 +20,8 @@ void main() throws ParseException {
 
     // Display range
 
-    String xMin = "0"; // X-Achse Minimum
-    String xMax = "10 * pi"; // X-Achse Maximum
+    String xMin = "-5"; // X-Achse Minimum
+    String xMax = "5"; // X-Achse Maximum
     String yMin = "-5"; // Y-Achse Minimum
     String yMax = "5"; // Y-Achse Maximum
 
@@ -35,8 +35,8 @@ void main() throws ParseException {
     // Expressions
 
     String complexExpression = "!(x > 0 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+1, 2) * sqrt(abs(a)) : tan(x) + ln(a)) && (b <= 5 || c != 3) ? (¯x + a*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
-    String func_1 = "x sqrt"; // Funktion 1
-    String func_2 = "100 x root"; // Funktion 2
+    String func_1 = "1 2 2 x logistic"; // Funktion 1
+    String func_2 = ""; // Funktion 2
     String func_3 = ""; // Funktion 3
     String func_4 = ""; // Funktion 4
     String func_5 = ""; // Funktion 5
@@ -578,7 +578,21 @@ void main() throws ParseException {
         - Arkustangens `atan(x)`
             - Infix: **`atan(x)`**
             - RPN: **`x atan`**
-        - 
+        - Quadratwurzel `sqrt(x)`
+            - Infix: **`sqrt(x)`**
+            - RPN: **`x sqrt`**
+        - Wurzel n-ten Grades `n-te Wurzel von x`
+            - Infix: **`root(n, x)`**
+            - RPN: **`n x root`**
+        - Logarithmus `Logarithmus von x zur Basis b`
+            - Infix: **`log(x, b)`**
+            - RPN: **`x b log`**
+        - Natürlicher Logarithmus `ln(x)`
+            - Infix: **`ln(x)`**
+            - RPN: **`x ln`**
+        - Absolutwert `|x|`
+            - Infix: **`abs(x)`**
+            - RPN: **`x abs`**
         """);
 
     // Div: Extensions

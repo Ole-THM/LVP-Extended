@@ -147,10 +147,18 @@ public class InfixParser implements ParserI {
         expect(TOKEN_TYPE.OPENPARENTHESIS);
         ASTNodeI firstArg = parseTernary();
         ASTNodeI secondArg = null;
+        ASTNodeI thirdArg = null;
+        ASTNodeI fourthArg = null;
         if (match(TOKEN_TYPE.COMMA)) {
             secondArg = parseTernary();
         }
-        List<ASTNodeI> args = new ArrayList<>(Arrays.asList(firstArg, secondArg));
+        if (match(TOKEN_TYPE.COMMA)) {
+            thirdArg = parseTernary();
+        }
+        if( match(TOKEN_TYPE.COMMA)) {
+            fourthArg = parseTernary();
+        }
+        List<ASTNodeI> args = new ArrayList<>(Arrays.asList(firstArg, secondArg, thirdArg, fourthArg));
         expect(TOKEN_TYPE.CLOSEPARENTHESIS);
         return new FunctionCallNode(funcName, args);
     }

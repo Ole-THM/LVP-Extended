@@ -26,23 +26,40 @@ public class RPNParser implements ParserI {
                         new VariableNode(token.text())
                 );
                 case FUNCTION -> {
-                    ASTNodeI right = null;
-                    ASTNodeI left = null;
-                    if (token.text().equals("log") || token.text().equals("root")) {
-                        if (this.stack.size() == 1) {
-                            left = this.safePop();
-                        } else if (this.stack.size() >= 2) {
-                            right = this.safePop();
-                            left = this.safePop();
+                    ASTNodeI fourthArg = null;
+                    ASTNodeI thirdArg = null;
+                    ASTNodeI secondArg = null;
+                    ASTNodeI firstArg = null;
+                    if (token.text().equals("log") || token.text().equals("root") || token.text().equals("gauss") || token.text().equals("logistic")) {
+                        int stackSize = this.stack.size();
+
+                        if (stackSize >= 4) {
+                            // 4 Argumente: fourthArg, thirdArg, secondArg, firstArg
+                            fourthArg = this.safePop();
+                            thirdArg = this.safePop();
+                            secondArg = this.safePop();
+                            firstArg = this.safePop();
+                        } else if (stackSize == 3) {
+                            // 3 Argumente: thirdArg, secondArg, firstArg
+                            thirdArg = this.safePop();
+                            secondArg = this.safePop();
+                            firstArg = this.safePop();
+                        } else if (stackSize == 2) {
+                            // 2 Argumente: secondArg, firstArg
+                            secondArg = this.safePop();
+                            firstArg = this.safePop();
+                        } else if (stackSize >= 1) {
+                            // 1 Argument: firstArg
+                            firstArg = this.safePop();
                         }
 
                     } else { // Extension to support two args for the root function maybe added later
                         // For other functions, we assume they take one argument
-                        left = this.safePop();
-//                        System.out.println(left);
+                        firstArg = this.safePop();
+//                        System.out.println(firstArg);
 
                     }
-                    List<ASTNodeI> args = new ArrayList<>(Arrays.asList(left, right));
+                    List<ASTNodeI> args = new ArrayList<>(Arrays.asList(firstArg, secondArg, thirdArg, fourthArg));
                     this.stack.push(
                             new FunctionCallNode(token.text(), args)
                     );
