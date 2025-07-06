@@ -35,7 +35,7 @@ void main() throws ParseException {
     // Expressions
 
     String complexExpression = "!(x > 0 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+1, 2) * sqrt(abs(a)) : tan(x) + ln(a)) && (b <= 5 || c != 3) ? (¯x + a*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
-    String func_1 = "1 2 2 x logistic"; // Funktion 1
+    String func_1 = "logistic(1,2,3,x)"; // Funktion 1
     String func_2 = ""; // Funktion 2
     String func_3 = ""; // Funktion 3
     String func_4 = ""; // Funktion 4
@@ -566,18 +566,46 @@ void main() throws ParseException {
         - Arkussinus `asin(x)`
             - Infix: **`asin(x)`**
             - RPN: **`x asin`**
+        - Sinus Hyperbolicus `sinh(x)`
+            - Infix: **`sinh(x)`**
+            - RPN: **`x sinh`**
+        - Arkussinus Hyperbolicus `asinh(x)`
+            - Infix: **`asinh(x)`**
+            - RPN: **`x asinh`**
         - Kosinus `cos(x)`
             - Infix: **`cos(x)`**
             - RPN: **`x cos`**
         - Arkuskosinus `acos(x)`
             - Infix: **`acos(x)`**
             - RPN: **`x acos`**
+        - Kosinus Hyperbolicus `cosh(x)`
+            - Infix: **`cosh(x)`**
+            - RPN: **`x cosh`**
+        - Arkuskosinus Hyperbolicus `acosh(x)`
+            - Infix: **`acosh(x)`**
+            - RPN: **`x acosh`**
         - Tangens `tan(x)`
             - Infix: **`tan(x)`**
             - RPN: **`x tan`**
         - Arkustangens `atan(x)`
             - Infix: **`atan(x)`**
             - RPN: **`x atan`**
+        - Tangens Hyperbolicus `tanh(x)`
+            - Infix: **`tanh(x)`**
+            - RPN: **`x tanh`**
+        - Arkustangens Hyperbolicus `atanh(x)`
+            - Infix: **`atanh(x)`**
+            - RPN: **`x atanh`**
+        - Square `square(x)`
+            - Infix: **`square(x)`**
+            - RPN: **`x square`**
+        - Sawtooth `sawtooth(x)`
+            - Infix: **`sawtooth(x)`**
+            - RPN: **`x sawtooth`**
+        - Triangle `triangle(x)`
+            - Infix: **`triangle(x)`**
+            - RPN: **`x triangle`**
+        ### 6.2.2 Weitere Funktionen
         - Quadratwurzel `sqrt(x)`
             - Infix: **`sqrt(x)`**
             - RPN: **`x sqrt`**
@@ -593,6 +621,31 @@ void main() throws ParseException {
         - Absolutwert `|x|`
             - Infix: **`abs(x)`**
             - RPN: **`x abs`**
+        ### 6.2.3 Spezielle Funktionen
+        - Gamma-Funktion `gamma(x)`
+            - Infix: **`gamma(x)`**
+            - RPN: **`x gamma`**
+        - Fakultät `x!`
+            - Infix: **`factorial(x)`**
+            - RPN: **`x factorial`**
+        - Heaviside-Funktion `heaviside(x)`
+            - Infix: **`heaviside(x)`**
+            - RPN: **`x heaviside`**
+        - Signum-Funktion `signum(x)`
+            - Infix: **`signum(x)`**
+            - RPN: **`x signum`**
+        - Minimum `min(a, b)`
+            - Infix: **`min(a, b)`**
+            - RPN: **`a b min`**
+        - Maximum `max(a, b)`
+            - Infix: **`max(a, b)`**
+            - RPN: **`a b max`**
+        - Gauß-Funktion `gauss(x, mu, sigma)`
+            - Infix: **`gauss(x, mu, sigma)`**
+            - RPN: **`x mu sigma gauss`**
+        - Logistische Funktion `logistic(x, mu, sigma)`
+            - Infix: **`logistic(x, mu, sigma)`**
+            - RPN: **`x mu sigma logistic`**
         """);
 
     // Div: Extensions

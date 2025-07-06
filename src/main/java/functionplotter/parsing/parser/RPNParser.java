@@ -26,43 +26,18 @@ public class RPNParser implements ParserI {
                         new VariableNode(token.text())
                 );
                 case FUNCTION -> {
-                    ASTNodeI fourthArg = null;
-                    ASTNodeI thirdArg = null;
-                    ASTNodeI secondArg = null;
-                    ASTNodeI firstArg = null;
-                    if (token.text().equals("log") || token.text().equals("root") || token.text().equals("gauss") || token.text().equals("logistic")) {
-                        int stackSize = this.stack.size();
+                    int argCount = getArgumentCount(token.text());
+                    List<ASTNodeI> args = new ArrayList<>();
 
-                        if (stackSize >= 4) {
-                            // 4 Argumente: fourthArg, thirdArg, secondArg, firstArg
-                            fourthArg = this.safePop();
-                            thirdArg = this.safePop();
-                            secondArg = this.safePop();
-                            firstArg = this.safePop();
-                        } else if (stackSize == 3) {
-                            // 3 Argumente: thirdArg, secondArg, firstArg
-                            thirdArg = this.safePop();
-                            secondArg = this.safePop();
-                            firstArg = this.safePop();
-                        } else if (stackSize == 2) {
-                            // 2 Argumente: secondArg, firstArg
-                            secondArg = this.safePop();
-                            firstArg = this.safePop();
-                        } else if (stackSize >= 1) {
-                            // 1 Argument: firstArg
-                            firstArg = this.safePop();
+                    for (int i = 0; i < argCount; i++) {
+                        if (!this.stack.isEmpty()) {
+                            args.addFirst(this.safePop());
+                        } else {
+                            args.addFirst(null);
                         }
-
-                    } else { // Extension to support two args for the root function maybe added later
-                        // For other functions, we assume they take one argument
-                        firstArg = this.safePop();
-//                        System.out.println(firstArg);
-
                     }
-                    List<ASTNodeI> args = new ArrayList<>(Arrays.asList(firstArg, secondArg, thirdArg, fourthArg));
-                    this.stack.push(
-                            new FunctionCallNode(token.text(), args)
-                    );
+
+                    this.stack.push(new FunctionCallNode(token.text(), args));
                 }
                 case MINUS, PLUS, MULTIPLY, DIVIDE, EXPONENT, MODULO -> {
                     ASTNodeI right = this.safePop();
@@ -115,4 +90,15 @@ public class RPNParser implements ParserI {
             return false;
         }
     }
+
+    private int getArgumentCount(String functionName) {
+        return switch (functionName) {
+            case "logistic" -> 4;
+            case "gauss" -> 3;
+            case "log", "root", "min", "max" -> 2;
+            case "sin", "cos", "tan", "sqrt", "ln", "abs", "factorial", "gamma" -> 1;
+            default -> 1; // Standard: 1 Argument
+        };
+    }
+
 }

@@ -145,21 +145,15 @@ public class InfixParser implements ParserI {
 //        System.out.println("InfixParser.parseFunctionCall: Parsing function call at position: " + pos);
         String funcName = previous().text();
         expect(TOKEN_TYPE.OPENPARENTHESIS);
-        ASTNodeI firstArg = parseTernary();
-        ASTNodeI secondArg = null;
-        ASTNodeI thirdArg = null;
-        ASTNodeI fourthArg = null;
-        if (match(TOKEN_TYPE.COMMA)) {
-            secondArg = parseTernary();
+
+        List<ASTNodeI> args = new ArrayList<>();
+        if (!match(TOKEN_TYPE.CLOSEPARENTHESIS)) {
+            do {
+                args.add(parseTernary());
+            } while (match(TOKEN_TYPE.COMMA));
+
+            expect(TOKEN_TYPE.CLOSEPARENTHESIS);
         }
-        if (match(TOKEN_TYPE.COMMA)) {
-            thirdArg = parseTernary();
-        }
-        if( match(TOKEN_TYPE.COMMA)) {
-            fourthArg = parseTernary();
-        }
-        List<ASTNodeI> args = new ArrayList<>(Arrays.asList(firstArg, secondArg, thirdArg, fourthArg));
-        expect(TOKEN_TYPE.CLOSEPARENTHESIS);
         return new FunctionCallNode(funcName, args);
     }
 
