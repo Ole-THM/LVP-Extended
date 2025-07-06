@@ -37,8 +37,8 @@ void main() throws ParseException {
     String complexExpression = "!(x > 0 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+1, 2) * sqrt(abs(a)) : tan(x) + ln(a)) && (b <= 5 || c != 3) ? (¯x + a*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
     String func_1 = "logistic(1,2,3,x)"; // Funktion 1
     String func_2 = ""; // Funktion 2
-    String func_3 = ""; // Funktion 3
-    String func_4 = ""; // Funktion 4
+    String func_3 = "x asinh"; // Funktion 3
+    String func_4 = "sin(x) + cos(b^2) - sqrt(abs(¯4))"; // Funktion 4
     String func_5 = ""; // Funktion 5
 
     String scalingFunction = "x"; // Skalier Funktion
@@ -55,11 +55,11 @@ void main() throws ParseException {
 
     // Variables
 
-    String var_1 = "x % (2 * pi) < pi"; // Variable a
-    String var_2 = "sin(x)"; // Variable b
-    String var_3 = "tan(x)"; // Variable c
-    String var_4 = ""; // Variable d
-    String var_5 = ""; // Variable e
+    String var_1 = "1"; // Variable a
+    String var_2 = "2"; // Variable b
+    String var_3 = "3"; // Variable c
+    String var_4 = "4"; // Variable d
+    String var_5 = "5"; // Variable e
 
     GlobalContext.VARIABLES.add(
             new Variable(
@@ -610,9 +610,11 @@ void main() throws ParseException {
             - Infix: **`sqrt(x)`**
             - RPN: **`x sqrt`**
         - Wurzel n-ten Grades `n-te Wurzel von x`
+            - Bei Angabe nur einen Arguments wird standardmäßig die Quadratwurzel berechnet
             - Infix: **`root(n, x)`**
             - RPN: **`n x root`**
         - Logarithmus `Logarithmus von x zur Basis b`
+            - Bei Angabe nur einen Arguments wird standardmäßig der Logarithmus zur Basis 10 berechnet
             - Infix: **`log(x, b)`**
             - RPN: **`x b log`**
         - Natürlicher Logarithmus `ln(x)`

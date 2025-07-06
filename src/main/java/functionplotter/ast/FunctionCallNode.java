@@ -36,10 +36,10 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
             case "tanh" -> Math.tanh(this.arguments.getFirst().evaluate());
             case "atanh" -> 0.5 * Math.log((1 + this.arguments.getFirst().evaluate()) / (1 - this.arguments.getFirst().evaluate()));
             case "sqrt" -> Math.sqrt(this.arguments.getFirst().evaluate());
-            case "root" -> this.arguments.get(1) != null
+            case "root" -> this.arguments.size() == 2
                     ? this.root(this.arguments.getFirst().evaluate(), this.arguments.get(1).evaluate())
                     : Math.sqrt(this.arguments.get(0).evaluate()); // defaults to sqrt if no base is given
-            case "log" -> this.arguments.get(1) != null
+            case "log" -> this.arguments.size() == 2
                     ? this.log_n(this.arguments.getFirst().evaluate(), this.arguments.get(1).evaluate())
                     : this.log_n(10, this.arguments.getFirst().evaluate()); // defaults to base 10 if no base is given
             case "ln" -> this.log_n(Math.E, this.arguments.getFirst().evaluate());
@@ -52,15 +52,15 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
             case "max" -> Math.max(this.arguments.getFirst().evaluate(), this.arguments.get(1).evaluate());
             case "gauss" -> {
                 double x = this.arguments.getFirst().evaluate();
-                double sigma = this.arguments.get(1) != null ? this.arguments.get(1).evaluate() : 1.0;
-                double mu = this.arguments.get(2) != null ? this.arguments.get(2).evaluate() : 0.0;
+                double sigma = this.arguments.size() >= 2 ? this.arguments.get(1).evaluate() : 1.0;
+                double mu = this.arguments.size() >= 3 ? this.arguments.get(2).evaluate() : 0.0;
                 yield (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
             }
             case "logistic" -> {
                 double x = this.arguments.getFirst().evaluate();
-                double L = this.arguments.get(1) != null ? this.arguments.get(1).evaluate() : 1.0;
-                double k = this.arguments.get(2) != null ? this.arguments.get(2).evaluate() : 1.0;
-                double x0 = this.arguments.get(3) != null ? this.arguments.get(3).evaluate() : 0.0;
+                double L = this.arguments.size() >= 2 ? this.arguments.get(1).evaluate() : 1.0;
+                double k = this.arguments.size() >= 3 ? this.arguments.get(2).evaluate() : 1.0;
+                double x0 = this.arguments.size() >= 4 ? this.arguments.get(3).evaluate() : 0.0;
                 yield L / (1 + Math.exp(-k * (x - x0)));
             }
             case "square" -> Math.sin(this.arguments.getFirst().evaluate()) >= 0 ? 1.0 : -1.0;
@@ -108,10 +108,10 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
             case "tanh" -> "tanh(" + this.arguments.getFirst().toStringInfix() + ")";
             case "atanh" -> "atanh(" + this.arguments.getFirst().toStringInfix() + ")";
             case "sqrt" -> "sqrt(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "root" -> this.arguments.get(1) != null
+            case "root" -> this.arguments.size() == 2
                     ? "root(" + this.arguments.getFirst().toStringInfix() + ", " + this.arguments.get(1).toStringInfix() + ")"
                     : "sqrt(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "log" -> "log(" + (this.arguments.get(1) != null
+            case "log" -> "log(" + (this.arguments.size() == 2
                     ? this.arguments.getFirst().toStringInfix() + ", " + this.arguments.get(1).toStringInfix()
                     : String.format("%.4f", Math.E) + ", " + this.arguments.getFirst().toStringInfix()) + ")";
             case "ln" -> "ln(" + this.arguments.getFirst().toStringInfix() + ")";
@@ -124,15 +124,15 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
             case "max" -> "max(" + this.arguments.getFirst().toStringInfix() + ", " + this.arguments.get(1).toStringInfix() + ")";
             case "gauss" -> {
                 String x = this.arguments.getFirst().toStringInfix();
-                String sigma = this.arguments.get(1) != null ? this.arguments.get(1).toStringInfix() : "1.0";
-                String mu = this.arguments.get(2) != null ? this.arguments.get(2).toStringInfix() : "0.0";
+                String sigma = this.arguments.size() >= 2 ? this.arguments.get(1).toStringInfix() : "1.0";
+                String mu = this.arguments.size() >= 3 ? this.arguments.get(2).toStringInfix() : "0.0";
                 yield "gauss(" + x + ", " + sigma + ", " + mu + ")";
             }
             case "logistic" -> {
                 String x = this.arguments.getFirst().toStringInfix();
-                String L = this.arguments.get(1) != null ? this.arguments.get(1).toStringInfix() : "1.0";
-                String k = this.arguments.get(2) != null ? this.arguments.get(2).toStringInfix() : "1.0";
-                String x0 = this.arguments.get(3) != null ? this.arguments.get(3).toStringInfix() : "0.0";
+                String L = this.arguments.size() >= 2 ? this.arguments.get(1).toStringInfix() : "1.0";
+                String k = this.arguments.size() >= 3 ? this.arguments.get(2).toStringInfix() : "1.0";
+                String x0 = this.arguments.size() >= 4 ? this.arguments.get(3).toStringInfix() : "0.0";
                 yield "logistic(" + x + ", " + L + ", " + k + ", " + x0 + ")";
             }
             case "square" -> "square(" + this.arguments.getFirst().toStringInfix() + ")";
@@ -158,10 +158,10 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
             case "tanh" -> this.arguments.getFirst().toStringRPN() + " tanh";
             case "atanh" -> this.arguments.getFirst().toStringRPN() + " atanh";
             case "sqrt" -> this.arguments.getFirst().toStringRPN() + " sqrt";
-            case "root" -> this.arguments.get(1) != null
+            case "root" -> this.arguments.size() == 2
                     ? this.arguments.getFirst().toStringInfix() + " " + this.arguments.get(1).toStringInfix() + " root"
                     : this.arguments.getFirst().toStringInfix() + "sqrt";
-            case "log" -> (this.arguments.get(1) != null
+            case "log" -> (this.arguments.size() == 2
                     ? this.arguments.getFirst().toStringRPN() + " " + this.arguments.get(1).toStringRPN()
                     : String.format("%.4f", Math.E) + ", " + this.arguments.getFirst().toStringRPN()) + " log";
             case "ln" -> this.arguments.getFirst().toStringRPN() + " ln";
@@ -174,15 +174,15 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
             case "max" -> this.arguments.getFirst().toStringRPN() + " " + this.arguments.get(1).toStringRPN() + " max";
             case "gauss" -> {
                 String x = this.arguments.getFirst().toStringRPN();
-                String sigma = this.arguments.get(1) != null ? this.arguments.get(1).toStringRPN() : "1.0";
-                String mu = this.arguments.get(2) != null ? this.arguments.get(2).toStringRPN() : "0.0";
+                String sigma = this.arguments.size() >= 2 ? this.arguments.get(1).toStringRPN() : "1.0";
+                String mu = this.arguments.size() >= 3 ? this.arguments.get(2).toStringRPN() : "0.0";
                 yield x + " " + sigma + " " + mu + " gauss";
             }
             case "logistic" -> {
                 String x = this.arguments.getFirst().toStringRPN();
-                String L = this.arguments.get(1) != null ? this.arguments.get(1).toStringRPN() : "1.0";
-                String k = this.arguments.get(2) != null ? this.arguments.get(2).toStringRPN() : "1.0";
-                String x0 = this.arguments.get(3) != null ? this.arguments.get(3).toStringRPN() : "0.0";
+                String L = this.arguments.size() >= 2 ? this.arguments.get(1).toStringRPN() : "1.0";
+                String k = this.arguments.size() >= 3 ? this.arguments.get(2).toStringRPN() : "1.0";
+                String x0 = this.arguments.size() >= 4 ? this.arguments.get(3).toStringRPN() : "0.0";
                 yield x + " " + L + " " + k + " " + x0 + " logistic";
             }
             case "square" -> this.arguments.getFirst().toStringRPN() + " square";
