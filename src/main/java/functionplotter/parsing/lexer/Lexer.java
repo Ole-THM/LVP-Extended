@@ -40,6 +40,7 @@ public class Lexer {
                         case ',': tokens.add(new Token(TOKEN_TYPE.COMMA, ",")); break;
                         case '?': tokens.add(new Token(TOKEN_TYPE.QUESTION, "?")); break;
                         case ':': tokens.add(new Token(TOKEN_TYPE.COLON, ":")); break;
+                        case '%': tokens.add(new Token(TOKEN_TYPE.MODULO, "%")); break;
                         default: throw new RuntimeException("Unbekanntes Zeichen: " + currentChar);
                     }
                     pos++;

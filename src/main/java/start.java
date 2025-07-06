@@ -20,8 +20,8 @@ void main() throws ParseException {
 
     // Display range
 
-    String xMin = "-5"; // X-Achse Minimum
-    String xMax = "5"; // X-Achse Maximum
+    String xMin = "0"; // X-Achse Minimum
+    String xMax = "10 * pi"; // X-Achse Maximum
     String yMin = "-5"; // Y-Achse Minimum
     String yMax = "5"; // Y-Achse Maximum
 
@@ -35,9 +35,9 @@ void main() throws ParseException {
     // Expressions
 
     String complexExpression = "!(x > 0 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+1, 2) * sqrt(abs(a)) : tan(x) + ln(a)) && (b <= 5 || c != 3) ? (¯x + a*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
-    String func_1 = "1 + 2"; // Funktion 1
-    String func_2 = "log(10,2) + 100 * 1 / 5"; // Funktion 2
-    String func_3 = "sin(x) > 0"; // Funktion 3
+    String func_1 = "a ? b : c"; // Funktion 1
+    String func_2 = ""; // Funktion 2
+    String func_3 = ""; // Funktion 3
     String func_4 = ""; // Funktion 4
     String func_5 = ""; // Funktion 5
 
@@ -55,9 +55,9 @@ void main() throws ParseException {
 
     // Variables
 
-    String var_1 = "sin(x) + 2"; // Variable a
-    String var_2 = "sin(x) - 2"; // Variable b
-    String var_3 = "sin(x) > sin(x - pi)"; // Variable c
+    String var_1 = "x % (2 * pi) < pi"; // Variable a
+    String var_2 = "sin(x)"; // Variable b
+    String var_3 = "tan(x)"; // Variable c
     String var_4 = ""; // Variable d
     String var_5 = ""; // Variable e
 
@@ -84,12 +84,12 @@ void main() throws ParseException {
             )
     );
 
-    boolean logScale = false; // Logarithmisch
+    boolean logScale = true; // Logarithmisch
     boolean trigScale = false; // Trigonometrisch
 
     SCALING scale = scaleHandler(logScale, trigScale);
 
-    boolean useSmartRange = true; // Smart Range
+    boolean useSmartRange = false; // Smart Range
 
     // Titel und Einleitung
     Clerk.markdown("""
@@ -150,24 +150,19 @@ void main() throws ParseException {
 
     // Plot
 
-    StringBuilder outPutString = new StringBuilder();
-    outPutString.append(
-            Plotter.plot(
-                    xyRange,
-                    new OutPutDimension(1000,700),
-                    Parser.parse(scalingFunction),
-                    scale,
-                    useSmartRange,
-                    expressionsAsColoredNodes
-            )
-    );
-
     Clerk.markdown("""
         ### Anzeige
         """);
 
     Clerk.markdown(
-            outPutString.toString()
+        Plotter.plot(
+            xyRange,
+            new OutPutDimension(1000, 700),
+            Parser.parse(scalingFunction),
+            scale,
+            useSmartRange,
+            expressionsAsColoredNodes
+        )
     );
 
     // Settings
@@ -429,14 +424,96 @@ void main() throws ParseException {
     // Logical Expressions
 
     Clerk.markdown("""
-        ## 5. Boolsche Ausdrücke
+        ## 5. Logische Ausdrücke
         Um logische Ausdrücke mit den vorhandenen arithmetischen Ausdrücken kompatibel zu machen und sinnvoll darstellen zu können, muss zuerst definiert werden wann ein arithmetischer Ausdruck `true` oder `false` ist.
         In diesem Fall habe ich mich dazu entschieden alle `positiven Werte` als `true` und alle `negativen Werte und 0` als `false` zu behandeln.
         So ist sichergestellt, dass alle Ausdrücke sowohl als *arithmetisch*, als auch als *logisch* behandelt werden können.
-        Darüber hinaus werden logische Vergleiche stets einen `Wahrheitswert ∈ {0, 1}` zurückgeben.
+        UMgekehrt werden logische Vergleiche stets einen `Wahrheitswert ∈ {0, 1}` zurückgeben.
+        ### 5.1 Unterstützte Operanden
+        Es werden alle grundlegenden logischen Operationen unterstützt:
+        - **`>, >=`**
+            - `größer, größer oder gleich`
+        - **`<, <=`**
+            - `kleiner, kleiner oder gleich`
+        - **`==, !=`**
+            - `gleich, nicht gleich`
+        - **`!, ||, &&`**
+            - `nicht, oder, und`
+        - **`? :`**
+            - `ternärer Operator`
+        ### 5.2 Beispiel
+        Zur übersichtlicheren Gestaltung und Demonstrationszwecken benutzen wir Variablen
         """);
 
+    String booleanExpressionTutorial = "f ? g : h"; // Logischer Ausdruck
 
+    Clerk.write(Interaction.input(
+        "./src/main/java/start.java", "// Logischer Ausdruck",
+        "String booleanExpressionTutorial = \"$\";",
+        booleanExpressionTutorial
+    ));
+
+
+    String booleanVarTutorial_1 = "x < 0"; // Logische Variable f
+    String booleanVarTutorial_2 = "tan(x)"; // Logische Variable g
+    String booleanVarTutorial_3 = "x sin"; // Logische Variable h
+
+    Clerk.markdown("""
+        ##
+        """);
+
+    GlobalContext.VARIABLES.add(
+            new Variable(
+                    "f",
+                    Parser.parse(booleanVarTutorial_1)
+            ),
+            new Variable(
+                    "g",
+                    Parser.parse(booleanVarTutorial_2)
+            ),
+            new Variable(
+                    "h",
+                    Parser.parse(booleanVarTutorial_3)
+            )
+    );
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Logische Variable f",
+            "String booleanVarTutorial_1 = \"$\";",
+            booleanVarTutorial_1
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Logische Variable g",
+            "String booleanVarTutorial_2 = \"$\";",
+            booleanVarTutorial_2
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Logische Variable h",
+            "String booleanVarTutorial_3 = \"$\";",
+            booleanVarTutorial_3
+    ));
+
+    Clerk.markdown("""
+        Der Ausdruck ist in diesem Beispiel der ternäre Operator, für welchen die Kondition die Variable `f = x < 0` darstellt.<br>
+        Wenn diese Kondition erfüllt ist, soll also `g = tan(x)` geplottet werden und für alle anderen Werte `h = sin(x)`
+        ##
+        """);
+
+    Clerk.markdown(
+        Plotter.plot(
+            new XYRange(
+                Parser.parse("-3*pi").evaluate(),Parser.parse("3*pi").evaluate(),
+                -5,5
+            ),
+            new OutPutDimension(1000, 700),
+            Parser.parse("x"),
+            SCALING.TRIGONOMETRIC,
+            false,
+            new ColoredNode(
+                Parser.parse(booleanExpressionTutorial),
+                ColorPicker.getNextColor()
+            )
+        )
+    );
 
     // Div: Extensions
     Clerk.markdown("""

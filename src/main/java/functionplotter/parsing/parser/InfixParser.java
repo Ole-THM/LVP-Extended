@@ -97,7 +97,7 @@ public class InfixParser implements ParserI {
     private ASTNodeI parseTerm() throws ParseException {
 //        System.out.println("InfixParser.parseTerm: Parsing term at position: " + pos);
         ASTNodeI node = parseFactor();
-        while (match(TOKEN_TYPE.MULTIPLY, TOKEN_TYPE.DIVIDE)) {
+        while (match(TOKEN_TYPE.MULTIPLY, TOKEN_TYPE.DIVIDE, TOKEN_TYPE.MODULO)) {
             TOKEN_TYPE op = previous().type();
             ASTNodeI right = parseFactor();
             node = new BinaryOpNode(node, op, right);

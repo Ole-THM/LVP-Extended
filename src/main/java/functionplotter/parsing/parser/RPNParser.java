@@ -47,7 +47,7 @@ public class RPNParser implements ParserI {
                             new FunctionCallNode(token.text(), args)
                     );
                 }
-                case MINUS, PLUS, MULTIPLY, DIVIDE, EXPONENT -> {
+                case MINUS, PLUS, MULTIPLY, DIVIDE, EXPONENT, MODULO -> {
                     ASTNodeI right = this.safePop();
                     ASTNodeI left = this.safePop();
                     this.stack.push(

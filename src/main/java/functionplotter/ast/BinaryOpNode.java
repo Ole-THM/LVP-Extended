@@ -15,6 +15,7 @@ public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) impleme
             case PLUS -> left.evaluate() + right.evaluate();
             case MINUS -> left.evaluate() - right.evaluate();
             case MULTIPLY -> left.evaluate() * right.evaluate();
+            case MODULO -> left.evaluate() % right.evaluate();
             case DIVIDE -> left.evaluate() / right.evaluate();
             case EXPONENT -> Math.pow(left.evaluate(), right.evaluate());
             default -> throw new UnsupportedOperationException("Unsupported operation: " + op);
@@ -46,6 +47,7 @@ public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) impleme
             case PLUS -> "+";
             case MINUS -> "-";
             case MULTIPLY -> "*";
+            case MODULO -> "%";
             case DIVIDE -> "/";
             case EXPONENT -> "^";
             default -> "default";
@@ -55,7 +57,7 @@ public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) impleme
     private int precedence(TOKEN_TYPE op) {
         return switch (op) {
             case PLUS, MINUS -> 1;
-            case MULTIPLY, DIVIDE -> 2;
+            case MULTIPLY, DIVIDE, MODULO -> 2;
             case EXPONENT -> 3;
             default -> 0;
         };
