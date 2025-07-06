@@ -18,6 +18,8 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
         return newArguments;
     }
 
+
+
     @Override
     public double evaluate() {
         return switch (functionName) {
@@ -28,11 +30,14 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
             case "tan" -> Math.tan(this.arguments.getFirst().evaluate());
             case "atan" -> Math.atan(this.arguments.getFirst().evaluate());
             case "sqrt" -> Math.sqrt(this.arguments.getFirst().evaluate());
+            case "root" -> this.arguments.get(1) != null
+                    ? this.root(this.arguments.getFirst().evaluate(), this.arguments.get(1).evaluate())
+                    : Math.sqrt(this.arguments.get(0).evaluate()); // defaults to sqrt if no base is given
             case "abs" -> Math.abs(this.arguments.getFirst().evaluate());
             case "log" -> this.arguments.get(1) != null
-                    ? log_n(this.arguments.getFirst().evaluate(), this.arguments.get(1).evaluate())
-                    : log_n(10, this.arguments.get(0).evaluate()); // defaults to base 10 if no base is given
-            case "ln" -> log_n(Math.E, this.arguments.get(0).evaluate());
+                    ? this.log_n(this.arguments.getFirst().evaluate(), this.arguments.get(1).evaluate())
+                    : this.log_n(10, this.arguments.getFirst().evaluate()); // defaults to base 10 if no base is given
+            case "ln" -> this.log_n(Math.E, this.arguments.getFirst().evaluate());
             default -> throw new UnsupportedOperationException("Unsupported function: " + functionName);
         };
     }
@@ -61,6 +66,9 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
             case "tan" -> "tan(" + this.arguments.getFirst().toStringInfix() + ")";
             case "atan" -> "atan(" + this.arguments.getFirst().toStringInfix() + ")";
             case "sqrt" -> "sqrt(" + this.arguments.getFirst().toStringInfix() + ")";
+            case "root" -> this.arguments.get(1) != null
+                    ? "root(" + this.arguments.getFirst().toStringInfix() + ", " + this.arguments.get(1).toStringInfix() + ")"
+                    : "sqrt(" + this.arguments.getFirst().toStringInfix() + ")";
             case "abs" -> "abs(" + this.arguments.getFirst().toStringInfix() + ")";
             case "log" -> "log(" + (this.arguments.get(1) != null
                     ? this.arguments.getFirst().toStringInfix() + ", " + this.arguments.get(1).toStringInfix()
@@ -80,6 +88,9 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
             case "tan" -> this.arguments.getFirst().toStringRPN() + " tan";
             case "atan" -> this.arguments.getFirst().toStringRPN() + " atan";
             case "sqrt" -> this.arguments.getFirst().toStringRPN() + " sqrt";
+            case "root" -> this.arguments.get(1) != null
+                    ? this.arguments.getFirst().toStringInfix() + " " + this.arguments.get(1).toStringInfix() + " root"
+                    : this.arguments.getFirst().toStringInfix() + "sqrt";
             case "abs" -> this.arguments.getFirst().toStringRPN() + " abs";
             case "log" -> (this.arguments.get(1) != null
                     ? this.arguments.getFirst().toStringRPN() + " " + this.arguments.get(1).toStringRPN()
@@ -109,4 +120,11 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
 
     @Override
     public String getId() { return "FunctionCallNode_" + System.identityHashCode(this); }
+
+    private double root(double base, double index) {
+        if (index < 0 || base == 0) {
+            throw new IllegalArgumentException("Index cannot be less than zero for root function.");
+        }
+        return Math.pow(index, 1.0 / base);
+    }
 }
