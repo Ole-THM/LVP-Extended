@@ -22,8 +22,11 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
     public double evaluate() {
         return switch (functionName) {
             case "sin" -> Math.sin(this.arguments.getFirst().evaluate());
+            case "asin" -> Math.asin(this.arguments.getFirst().evaluate());
             case "cos" -> Math.cos(this.arguments.getFirst().evaluate());
+            case "acos" -> Math.acos(this.arguments.getFirst().evaluate());
             case "tan" -> Math.tan(this.arguments.getFirst().evaluate());
+            case "atan" -> Math.atan(this.arguments.getFirst().evaluate());
             case "sqrt" -> Math.sqrt(this.arguments.getFirst().evaluate());
             case "abs" -> Math.abs(this.arguments.getFirst().evaluate());
             case "log" -> this.arguments.get(1) != null
@@ -52,8 +55,11 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
     public String toStringInfix() {
         return switch (functionName) {
             case "sin" -> "sin(" + this.arguments.getFirst().toStringInfix() + ")";
+            case "asin" -> "asin(" + this.arguments.getFirst().toStringInfix() + ")";
             case "cos" -> "cos(" + this.arguments.getFirst().toStringInfix() + ")";
+            case "acos" -> "acos(" + this.arguments.getFirst().toStringInfix() + ")";
             case "tan" -> "tan(" + this.arguments.getFirst().toStringInfix() + ")";
+            case "atan" -> "atan(" + this.arguments.getFirst().toStringInfix() + ")";
             case "sqrt" -> "sqrt(" + this.arguments.getFirst().toStringInfix() + ")";
             case "abs" -> "abs(" + this.arguments.getFirst().toStringInfix() + ")";
             case "log" -> "log(" + (this.arguments.get(1) != null
@@ -68,8 +74,11 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
     public String toStringRPN() {
         return switch (functionName) {
             case "sin" -> this.arguments.getFirst().toStringRPN() + " sin";
+            case "asin" -> this.arguments.getFirst().toStringRPN() + " asin";
             case "cos" -> this.arguments.getFirst().toStringRPN() + " cos";
+            case "acos" -> this.arguments.getFirst().toStringRPN() + " acos";
             case "tan" -> this.arguments.getFirst().toStringRPN() + " tan";
+            case "atan" -> this.arguments.getFirst().toStringRPN() + " atan";
             case "sqrt" -> this.arguments.getFirst().toStringRPN() + " sqrt";
             case "abs" -> this.arguments.getFirst().toStringRPN() + " abs";
             case "log" -> (this.arguments.get(1) != null

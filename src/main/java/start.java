@@ -35,8 +35,8 @@ void main() throws ParseException {
     // Expressions
 
     String complexExpression = "!(x > 0 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+1, 2) * sqrt(abs(a)) : tan(x) + ln(a)) && (b <= 5 || c != 3) ? (¯x + a*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
-    String func_1 = "a ? b : c"; // Funktion 1
-    String func_2 = ""; // Funktion 2
+    String func_1 = ""; // Funktion 1
+    String func_2 = "x acos"; // Funktion 2
     String func_3 = ""; // Funktion 3
     String func_4 = ""; // Funktion 4
     String func_5 = ""; // Funktion 5
@@ -84,12 +84,12 @@ void main() throws ParseException {
             )
     );
 
-    boolean logScale = true; // Logarithmisch
+    boolean logScale = false; // Logarithmisch
     boolean trigScale = false; // Trigonometrisch
 
     SCALING scale = scaleHandler(logScale, trigScale);
 
-    boolean useSmartRange = false; // Smart Range
+    boolean useSmartRange = true; // Smart Range
 
     // Titel und Einleitung
     Clerk.markdown("""
@@ -430,17 +430,7 @@ void main() throws ParseException {
         So ist sichergestellt, dass alle Ausdrücke sowohl als *arithmetisch*, als auch als *logisch* behandelt werden können.
         UMgekehrt werden logische Vergleiche stets einen `Wahrheitswert ∈ {0, 1}` zurückgeben.
         ### 5.1 Unterstützte Operanden
-        Es werden alle grundlegenden logischen Operationen unterstützt:
-        - **`>, >=`**
-            - `größer, größer oder gleich`
-        - **`<, <=`**
-            - `kleiner, kleiner oder gleich`
-        - **`==, !=`**
-            - `gleich, nicht gleich`
-        - **`!, ||, &&`**
-            - `nicht, oder, und`
-        - **`? :`**
-            - `ternärer Operator`
+        Es werden alle grundlegenden logischen Operationen unterstützt, eine vollständige Liste aller unterstützten Operanden und Funktionen ist unter `6. Liste aller unterstützten Operanden und Funktionen` zu finden.
         ### 5.2 Beispiel
         Zur übersichtlicheren Gestaltung und Demonstrationszwecken benutzen wir Variablen
         """);
@@ -514,6 +504,82 @@ void main() throws ParseException {
             )
         )
     );
+
+    Clerk.markdown("""
+        # 6. Liste aller unterstützten Operanden und Funktionen
+        ## 6.1 Operanden
+        ### 6.1.1 Arithmetisch
+        - Exponentiation `a hoch b`
+            - Infix: **`a ^ b`**
+            - RPN: **`a b ^`**
+        - Multiplikation `a mal b`
+            - Infix: **`a * b`**
+            - RPN: **`a b *`**
+        - Division `a geteilt durch b`
+            - Infix: **`a / b`**
+            - RPN: **`a b /`**
+        - Modulo `a modulo b`
+            - Infix: **`a % b`**
+            - RPN: **`a b %`**
+        - Addition `a + b`
+            - Infix: **`a + b`**
+            - RPN: **`a b +`**
+        - Subtraktion `a - b`
+            - Infix: **`a - b`**
+            - RPN: **`a b -`**
+        ### 6.1.2 Logisch
+        - Vergleich `a kleiner b`
+            - Infix: **`a < b`**
+            - RPN: **`a b <`**
+        - Vergleich `a größer b`
+            - Infix: **`a > b`**
+            - RPN: **`a b >`**
+        - Vergleich `a kleiner oder gleich b`
+            - Infix: **`a <= b`**
+            - RPN: **`a b <=`**
+        - Vergleich `a größer oder gleich b`
+            - Infix: **"a >= b`**
+            - RPN: **`a b >=`**
+        - Vergleich `a gleich b`
+            - Infix: **`a == b`**
+            - RPN: **`a b ==`**
+        - Vergleich `a ungleich b`
+            - Infix: **`a != b`**
+            - RPN: **`a b !=`**
+        - Logisches Und `a und b`
+            - Infix: **`a && b`**
+            - RPN: **`a b &&`**
+        - Logisches Oder `a oder b`
+            - Infix: **`a || b`**
+            - RPN: **`a b ||`**
+        - Logisches Nicht `nicht a`
+            - Infix: **`! a`**
+            - RPN: **`a !`**
+        - Ternärer Operator `Wenn a dann b sonst c`
+            - Infix: **`a ? b : c`**
+            - RPN: **`a b c ?:`**
+        ## 6.2 Funktionen
+        ### 6.2.1 Kreisfunktionen
+        - Sinus `sin(x)`
+            - Infix: **`sin(x)`**
+            - RPN: **`x sin`**
+        - Arkussinus `asin(x)`
+            - Infix: **`asin(x)`**
+            - RPN: **`x asin`**
+        - Kosinus `cos(x)`
+            - Infix: **`cos(x)`**
+            - RPN: **`x cos`**
+        - Arkuskosinus `acos(x)`
+            - Infix: **`acos(x)`**
+            - RPN: **`x acos`**
+        - Tangens `tan(x)`
+            - Infix: **`tan(x)`**
+            - RPN: **`x tan`**
+        - Arkustangens `atan(x)`
+            - Infix: **`atan(x)`**
+            - RPN: **`x atan`**
+        - 
+        """);
 
     // Div: Extensions
     Clerk.markdown("""

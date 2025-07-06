@@ -17,10 +17,24 @@ public record VariableNode(String name) implements ASTNodeI {
     public boolean hasVar(String name) { return this.name().equals(name); }
 
     @Override
-    public String toStringInfix() { return this.name().equals("x") ? "x" : GlobalContext.VARIABLES.getOrDefault(this.name()).toStringInfix(); }
+    public String toStringInfix() {
+        return switch(this.name()) {
+            case "x" -> "x";
+            case "pi" -> "pi";
+            case "e" -> "e";
+            default -> GlobalContext.VARIABLES.getOrDefault(this.name()).toStringInfix();
+        };
+    }
 
     @Override
-    public String toStringRPN() { return this.name().equals("x") ? "x" : GlobalContext.VARIABLES.getOrDefault(this.name()).toStringRPN(); }
+    public String toStringRPN() {
+        return switch(this.name()) {
+            case "x" -> "x";
+            case "pi" -> "pi";
+            case "e" -> "e";
+            default -> GlobalContext.VARIABLES.getOrDefault(this.name()).toStringRPN();
+        };
+    }
 
     @Override
     public String toDotGraph() {
