@@ -35,8 +35,8 @@ void main() throws ParseException {
     // Expressions
 
     String complexExpression = "!(x > 0 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+1, 2) * sqrt(abs(a)) : tan(x) + ln(a)) && (b <= 5 || c != 3) ? (¯x + a*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
-    String func_1 = ""; // Funktion 1
-    String func_2 = "x acos"; // Funktion 2
+    String func_1 = "x sqrt"; // Funktion 1
+    String func_2 = "100 x root"; // Funktion 2
     String func_3 = ""; // Funktion 3
     String func_4 = ""; // Funktion 4
     String func_5 = ""; // Funktion 5

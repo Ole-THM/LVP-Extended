@@ -28,7 +28,7 @@ public class RPNParser implements ParserI {
                 case FUNCTION -> {
                     ASTNodeI right = null;
                     ASTNodeI left = null;
-                    if (token.text().equals("log")) {
+                    if (token.text().equals("log") || token.text().equals("root")) {
                         if (this.stack.size() == 1) {
                             left = this.safePop();
                         } else if (this.stack.size() >= 2) {

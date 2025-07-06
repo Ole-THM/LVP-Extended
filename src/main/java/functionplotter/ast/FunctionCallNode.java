@@ -121,10 +121,5 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
     @Override
     public String getId() { return "FunctionCallNode_" + System.identityHashCode(this); }
 
-    private double root(double base, double index) {
-        if (index < 0 || base == 0) {
-            throw new IllegalArgumentException("Index cannot be less than zero for root function.");
-        }
-        return Math.pow(index, 1.0 / base);
-    }
+    private double root(double base, double index) { return Math.pow(index, 1.0 / base); }
 }
