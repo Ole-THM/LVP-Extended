@@ -29,6 +29,10 @@ public record BinaryLogicalOPNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) 
         return result ? 1 : 0;
     }
 
+    @Override
+    public boolean hasVar(String name) {
+        return this.left.hasVar(name) || this.right.hasVar(name);
+    }
 
     @Override
     public String toStringInfix() {

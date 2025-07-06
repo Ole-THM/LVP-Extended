@@ -34,6 +34,16 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
         };
     }
 
+    @Override
+    public boolean hasVar(String name) {
+        for (ASTNodeI arg : this.arguments) {
+            if (arg != null && arg.hasVar(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private double log_n(double base, double value) {
         return Math.log(value) / Math.log(base);
     }

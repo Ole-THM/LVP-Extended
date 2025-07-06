@@ -19,6 +19,9 @@ public record UnaryOpNode(ASTNodeI node, TOKEN_TYPE op) implements ASTNodeI {
     }
 
     @Override
+    public boolean hasVar(String name) { return this.node.hasVar(name); }
+
+    @Override
     public String toStringInfix() {
         return switch (op) {
             case PLUS -> this.node.toStringInfix(); // Unary plus, no change

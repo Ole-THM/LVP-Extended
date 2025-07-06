@@ -22,6 +22,11 @@ public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) impleme
     }
 
     @Override
+    public boolean hasVar(String name) {
+        return this.left.hasVar(name) || this.right.hasVar(name);
+    }
+
+    @Override
     public String toStringInfix() {
         String leftStr = left instanceof BinaryOpNode lNode && precedence(lNode.op()) < precedence(this.op)
                 ? "(" + left.toStringInfix() + ")"

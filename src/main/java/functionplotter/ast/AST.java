@@ -15,6 +15,14 @@ public record AST(ASTNodeI root) implements ASTNodeI {
         return this.root.evaluate();
     }
 
+    @Override
+    public boolean hasVar(String name) {
+        if (this.root == null) {
+            throw new IllegalStateException("AST root is not set.");
+        }
+        return this.root.hasVar(name);
+    }
+    @Override
     public String toStringInfix() {
         if (this.root == null) {
             throw new IllegalStateException("AST root is not set.");
@@ -49,4 +57,6 @@ public record AST(ASTNodeI root) implements ASTNodeI {
 
     @Override
     public String getId() { return "AST_" + System.identityHashCode(this); }
+
+    public boolean isEmpty() { return this.root == null || (this.root instanceof ValueNode && ((ValueNode) this.root).value() == 0); }
 }

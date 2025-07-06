@@ -13,6 +13,9 @@ public record ValueNode(double value) implements ASTNodeI {
     }
 
     @Override
+    public boolean hasVar(String name) { return false; }
+
+    @Override
     public String toStringInfix() {
         return (int) this.value == this.value ? String.format("%d", (int) this.value) : String.format("%.4f", this.value);
     }

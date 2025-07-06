@@ -11,6 +11,9 @@ public record TernaryOpNode(ASTNodeI condition, ASTNodeI trueValue, ASTNodeI fal
     public double evaluate() { return condition.evaluate() > 0 ? trueValue.evaluate() : falseValue.evaluate(); }
 
     @Override
+    public boolean hasVar(String name) { return condition.hasVar(name) || trueValue.hasVar(name) || falseValue.hasVar(name); }
+
+    @Override
     public String toStringInfix() { return condition.toStringInfix() + " ? " + trueValue.toStringInfix() + " : " + falseValue.toStringInfix(); }
 
     @Override

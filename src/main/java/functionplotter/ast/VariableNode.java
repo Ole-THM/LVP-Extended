@@ -10,18 +10,21 @@ public record VariableNode(String name) implements ASTNodeI {
 
     @Override
     public double evaluate() {
-        return GlobalContext.VARIABLES.getOrDefault(this.name).ast().evaluate();
+        return GlobalContext.VARIABLES.getOrDefault(this.name()).ast().evaluate();
     }
 
     @Override
-    public String toStringInfix() { return GlobalContext.VARIABLES.getOrDefault(this.name).toStringInfix(); }
+    public boolean hasVar(String name) { return this.name().equals(name); }
 
     @Override
-    public String toStringRPN() { return GlobalContext.VARIABLES.getOrDefault(this.name).toStringRPN(); }
+    public String toStringInfix() { return this.name().equals("x") ? "x" : GlobalContext.VARIABLES.getOrDefault(this.name()).toStringInfix(); }
+
+    @Override
+    public String toStringRPN() { return this.name().equals("x") ? "x" : GlobalContext.VARIABLES.getOrDefault(this.name()).toStringRPN(); }
 
     @Override
     public String toDotGraph() {
-        ASTNodeI root = GlobalContext.VARIABLES.getOrDefault(this.name).ast().root().copy();
+        ASTNodeI root = GlobalContext.VARIABLES.getOrDefault(this.name()).ast().root().copy();
 
         // Eigenen Knoten definieren
         String res = "\"" + this.getId() + "\" [label=\"" + this.name() + "\"];\n";

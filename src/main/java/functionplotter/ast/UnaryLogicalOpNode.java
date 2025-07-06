@@ -13,6 +13,9 @@ public record UnaryLogicalOpNode(ASTNodeI node, TOKEN_TYPE op) implements ASTNod
     public double evaluate() { return node.evaluate() > 0 ? 0 : 1; }
 
     @Override
+    public boolean hasVar(String name) { return this.node.hasVar(name); }
+
+    @Override
     public String toStringInfix() {
         return "!" + this.node.toStringInfix();
     }
