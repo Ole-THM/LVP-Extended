@@ -29,8 +29,12 @@ public class XYRangeRecommender {
     public static XYRange recommendRange(AST...asts) {
         if (asts == null || asts.length == 0) {
             // Return default range if no ASTs provided
-            return new XYRange(DEFAULT_X_MIN, DEFAULT_X_MAX, DEFAULT_X_MIN / 2, DEFAULT_X_MAX / 2);
+            return XYRange.DEFAULT_RANGE();
         }
+
+        asts = Arrays.stream(asts)
+                .filter(ast -> ast != null && ast.hasVar("x")) // Filter out ASTs that do not use 'x'
+                .toArray(AST[]::new);
 
         // Initial x range for sampling
         double xMin = DEFAULT_X_MIN;
@@ -56,9 +60,7 @@ public class XYRangeRecommender {
         }
 
         // If no valid y values found, return default range
-        if (allYValues.isEmpty()) {
-            return new XYRange(DEFAULT_X_MIN, DEFAULT_X_MAX, DEFAULT_X_MIN / 2, DEFAULT_X_MAX / 2);
-        }
+        if (allYValues.isEmpty()) return XYRange.DEFAULT_RANGE();
 
         // Find min and max y values
         double yMin = Double.MAX_VALUE;

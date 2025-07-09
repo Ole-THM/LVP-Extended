@@ -12,4 +12,8 @@ public record XYRange(
     public XYRange(double xMin, double xMax, double yMin, double yMax) {
         this(xMin, xMax, yMin, yMax, xMax - xMin, yMax - yMin);
     }
+
+    public static XYRange DEFAULT_RANGE() {
+        return new XYRange(-10, 10, -10, 10);
+    }
 }
