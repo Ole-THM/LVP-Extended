@@ -5,6 +5,7 @@ import functionplotter.ast.ValueNode;
 import functionplotter.plotting.utils.OutPutDimension;
 import functionplotter.plotting.utils.XYRange;
 import functionplotter.utils.GlobalContext;
+import functionplotter.utils.PlottingConfig;
 import functionplotter.utils.SCALING;
 
 public class BaseCoordinateSystem {
@@ -23,23 +24,18 @@ public class BaseCoordinateSystem {
     static ASTNodeI scalingFunction;
     static SCALING scalingType;
 
-    // Overloaded method for backward compatibility
-    public static String genBase(XYRange xyRange, OutPutDimension outPutDimension, ASTNodeI scalingFun) {
-        return genBase(xyRange, outPutDimension, scalingFun, null);
-    }
-
-    public static String genBase(XYRange xyRange, OutPutDimension outPutDimension, ASTNodeI scalingFun, SCALING scaling) {
+    public static String genBase(PlottingConfig plottingConfig) {
         StringBuilder res = new StringBuilder();
-        width = outPutDimension.width();
-        height = outPutDimension.height();
+        width = plottingConfig.outPutDimension().width();
+        height = plottingConfig.outPutDimension().height();
 
-        xMin = xyRange.xMin();
-        xMax = xyRange.xMax();
-        yMin = xyRange.yMin();
-        yMax = xyRange.yMax();
+        xMin = plottingConfig.xyRange().xMin();
+        xMax = plottingConfig.xyRange().xMax();
+        yMin = plottingConfig.xyRange().yMin();
+        yMax = plottingConfig.xyRange().yMax();
 
-        scalingFunction = scalingFun;
-        scalingType = scaling;
+        scalingFunction = plottingConfig.scalingFunction();
+        scalingType = plottingConfig.scaling();
 
         axisXPos = (int) ((-xMin / (xMax - xMin)) * width);
         axisYPos = (height - (int) ((-yMin / (yMax - yMin) * height)));
@@ -82,7 +78,6 @@ public class BaseCoordinateSystem {
     private static int calculateTargetLines() {
         // Base value depends on the range
         double xRangeValue = xMax - xMin;
-        double yRangeValue = yMax - yMin;
 
         // Start with a base value proportional to the range
         int baseValue;
@@ -257,25 +252,16 @@ public class BaseCoordinateSystem {
 
     private static String drawVerticalLineGridLabel(double value, int xPos) {
         GlobalContext.VARIABLES.set("x", new ValueNode(value));
+        double unscaledValue = value;
         value = scalingFunction == null ? value : scalingFunction.evaluate();
 
         String label;
-        if (scalingType != SCALING.TRIGONOMETRIC) {
+        if (scalingType == SCALING.NONE) {
             // Default formatting for other scaling types
-            label = String.valueOf(value)
-                .replaceAll("\\.0+$", "")
-                .replaceAll("(\\.\\d*?)0+$", "$1")
-                .replaceAll("\\.$", "");
-            if (label.contains(".")) {
-                int idx = label.indexOf(".");
-                if (label.length() - idx - 1 > 2) {
-                    label = label.substring(0, idx + 3);
-                    label = label.replaceAll("(\\.\\d*?)0+$", "$1").replaceAll("\\.$", "");
-                }
-            }
+            label = formatString(value);
         } else if (scalingType == SCALING.TRIGONOMETRIC) {
             // Format as multiples of PI
-            double piMultiple = value / Math.PI;
+            double piMultiple = unscaledValue / Math.PI;
             if (Math.abs(piMultiple) < 0.001) {
                 label = "0";
             } else if (Math.abs(piMultiple - 1) < 0.001) {
@@ -330,17 +316,7 @@ public class BaseCoordinateSystem {
             }
         } else {
             // Default formatting for other scaling types
-            label = String.valueOf(value)
-                .replaceAll("\\.0+$", "")
-                .replaceAll("(\\.\\d*?)0+$", "$1")
-                .replaceAll("\\.$", "");
-            if (label.contains(".")) {
-                int idx = label.indexOf(".");
-                if (label.length() - idx - 1 > 2) {
-                    label = label.substring(0, idx + 3);
-                    label = label.replaceAll("(\\.\\d*?)0+$", "$1").replaceAll("\\.$", "");
-                }
-            }
+            label = formatString(value);
         }
         int yPos = axisYPos + 15; // Position below the X-axis
         return "<text x=\"" +
@@ -352,11 +328,12 @@ public class BaseCoordinateSystem {
                 "</text>\n";
     }
 
-    private static String drawHorizontalLineGridLabel(double value, int yPos) {
-        String label = String.valueOf(value)
+    private static String formatString(double value) {
+        String label;
+        label = String.valueOf(value)
             .replaceAll("\\.0+$", "")
             .replaceAll("(\\.\\d*?)0+$", "$1")
-            .replaceAll("\\.$", ""); // Remove trailing zeros
+            .replaceAll("\\.$", "");
         if (label.contains(".")) {
             int idx = label.indexOf(".");
             if (label.length() - idx - 1 > 2) {
@@ -364,13 +341,18 @@ public class BaseCoordinateSystem {
                 label = label.replaceAll("(\\.\\d*?)0+$", "$1").replaceAll("\\.$", "");
             }
         }
+        return label;
+    }
+
+    private static String drawHorizontalLineGridLabel(double value, int yPos) {
+
         int xPos = axisXPos + 10; // Position to the right of the Y-axis
         return "<text x=\"" +
                 xPos +
                 "\" y=\"" +
                 (yPos + 15) + // Adjust y position for better visibility
                 "\" font-size=\"12\" text-anchor=\"start\">" +
-                label +
+                formatString(value) +
                 "</text>\n";
     }
 }

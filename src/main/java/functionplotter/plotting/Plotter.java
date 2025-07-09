@@ -8,9 +8,12 @@ import functionplotter.plotting.utils.OutPutDimension;
 import functionplotter.plotting.utils.XYRange;
 import functionplotter.plotting.utils.XYRangeRecommender;
 import functionplotter.utils.GlobalContext;
+import functionplotter.utils.PlottingConfig;
 import functionplotter.utils.SCALING;
 
 public class Plotter {
+
+    static PlottingConfig plottingConfig;
 
     static XYRange xyRange;
     static double xMin;
@@ -27,39 +30,26 @@ public class Plotter {
 
     static ColoredNode[] coloredNodes;
 
-    /**
-     * Handler Function that sets all the relevant class Variables and calls the actual logic to plot which relies on these here set Values
-     *
-     * @param xyRange User defined X and Y Ranges
-     * @param outPutDimension Dimensions of the output Image
-     * @param scalingFunction User defined scaling Function for the X Axis
-     * @param scaling User selected scaling Function (takes priority over the scalingFunction)
-     * @param useSmartRange Tells the Plotter to use the User defined Range or calculate a custom one
-     * @param coloredNodes Array of all the ASTs and the colors in which they are going to be plotted
-     */
+    public static String plot(PlottingConfig plottingConfig) {
+        setConfig(plottingConfig);
+        return plot();
+    }
 
-    public static String plot(
-            XYRange xyRange,
-            OutPutDimension outPutDimension,
-            AST scalingFunction,
-            SCALING scaling,
-            Boolean useSmartRange,
-            ColoredNode...coloredNodes
-    ) {
-        Plotter.xyRange = useSmartRange ? XYRangeRecommender.recommendRange(coloredNodes) : xyRange;
+    private static void setConfig(PlottingConfig plottingConfig) {
+        Plotter.plottingConfig = plottingConfig;
+        Plotter.xyRange = plottingConfig.xyRange();
         xMin = Plotter.xyRange.xMin();
         xMax = Plotter.xyRange.xMax();
         yMin = Plotter.xyRange.yMin();
         yMax = Plotter.xyRange.yMax();
-        Plotter.outPutDimension = outPutDimension;
+        Plotter.outPutDimension = plottingConfig.outPutDimension();
         width = outPutDimension.width();
         height = outPutDimension.height();
-        Plotter.scalingFunction = scalingFunction;
-        Plotter.scaling = scaling;
-        Plotter.coloredNodes = coloredNodes;
-        return plot();
-    }
+        Plotter.scalingFunction = plottingConfig.scalingFunction();
+        Plotter.scaling = plottingConfig.scaling();
+        Plotter.coloredNodes = plottingConfig.coloredNodes();
 
+    }
     private static String plot() {
 
         StringBuilder res = new StringBuilder();
@@ -67,7 +57,7 @@ public class Plotter {
         res.append("<svg width=\"").append(width).append("\" height=\"").append(height)
                 .append("\" viewBox=\"0 0 ").append(width).append(" ").append(height)
                 .append("\" preserveAspectRatio=\"xMidYMid meet\" xmlns=\"http://www.w3.org/2000/svg\">\n");
-        res.append(BaseCoordinateSystem.genBase(xyRange, outPutDimension, scalingFunction, scaling));
+        res.append(BaseCoordinateSystem.genBase(plottingConfig));
         for (ColoredNode node : coloredNodes) {
             res.append(plotFunction(node));
         }
@@ -80,15 +70,12 @@ public class Plotter {
         Integer prevXPos = null, prevYPos = null;
         Double prevY = null;
 //        System.out.println("Plotter.plotFunction: " + coloredNode.ast().toStringInfix());
-        if (coloredNode.ast().toStringInfix().equals("0")) { //! not an elegant solution (Problem: Emtpy expressions should not be plotted)
+        if (coloredNode.ast().toStringInfix().equals("0") || !coloredNode.ast().hasVar("x")) { //! not an elegant solution (Problem: Emtpy expressions should not be plotted)
             return res.toString(); // Skip empty expressions
         }
-        for (double x = xMin; x <= xMax; x += getStepSize()) {
+        for (double x = xMin; x <= xMax ; x += getStepSize()) {
             GlobalContext.VARIABLES.set("x", new ValueNode(x));
-            // Only apply scaling function if scaling is null
-            if (scaling == null) {
-                GlobalContext.VARIABLES.set("x", new ValueNode(scalingFunction.evaluate()));
-            }
+            GlobalContext.VARIABLES.set("x", new ValueNode(scalingFunction.evaluate()));
             double rawY = coloredNode.ast().evaluate();
             boolean currInBounds = !Double.isNaN(rawY) && rawY >= yMin && rawY <= yMax;
             boolean prevInBounds = prevY != null && !Double.isNaN(prevY) && prevY >= yMin && prevY <= yMax;
