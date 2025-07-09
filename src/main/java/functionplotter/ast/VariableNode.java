@@ -20,8 +20,8 @@ public record VariableNode(String name) implements ASTNodeI {
     public String toStringInfix() {
         return switch(this.name()) {
             case "x" -> "x";
-            case "pi" -> "pi";
-            case "e" -> "e";
+            case "PI" -> "PI";
+            case "E" -> "E";
             default -> GlobalContext.VARIABLES.getOrDefault(this.name()).toStringInfix();
         };
     }

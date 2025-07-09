@@ -14,14 +14,24 @@ public class Variables {
     public Variables() {
         this.variables = new ArrayList<>();
         this.add(
-            new Variable("e", new AST(new ValueNode(Math.E))),
-            new Variable("pi", new AST(new ValueNode(Math.PI))),
+            new Variable("E", new AST(new ValueNode(Math.E))),
+            new Variable("PI", new AST(new ValueNode(Math.PI))),
             new Variable("x", new AST(new ValueNode(1)))
         );
     }
 
     public void add(Variable...variables) {
         this.variables.addAll(Arrays.asList(variables));
+    }
+
+    public void addDefaultVariables() {
+        this.add(
+            new Variable("a", new AST(new ValueNode(1))),
+            new Variable("b", new AST(new ValueNode(2))),
+            new Variable("c", new AST(new ValueNode(3))),
+            new Variable("d", new AST(new ValueNode(4))),
+            new Variable("e", new AST(new ValueNode(5)))
+        );
     }
 
     public void set(String name, ASTNodeI node) {
