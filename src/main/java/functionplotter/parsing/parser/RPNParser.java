@@ -6,7 +6,6 @@ import functionplotter.utils.Token;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -29,11 +28,21 @@ public class RPNParser implements ParserI {
                     int argCount = getArgumentCount(token.text());
                     List<ASTNodeI> args = new ArrayList<>();
 
-                    for (int i = 0; i < argCount; i++) {
-                        if (!this.stack.isEmpty()) {
+                    if (token.text().equals("log") || token.text().equals("root")) {
+                        // Get two args for log and root functions, since these two can process 1 and two arguments
+                        if (this.stack.size() >= 2) {
                             args.addFirst(this.safePop());
-                        } else {
-                            args.addFirst(null);
+                            args.addFirst(this.safePop());
+                        } else if (this.stack.size() == 1) {
+                            args.addFirst(this.safePop());
+                        }
+                    } else {
+                        for (int i = 0; i < argCount; i++) {
+                            if (!this.stack.isEmpty()) {
+                                args.addFirst(this.safePop());
+                            } else {
+                                args.addFirst(null);
+                            }
                         }
                     }
 
