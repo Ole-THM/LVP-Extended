@@ -14,26 +14,32 @@ public record VariableNode(String name) implements ASTNodeI {
     }
 
     @Override
-    public boolean hasVar(String name) { return this.name().equals(name); }
+    public boolean hasVar(String name) { return this.name().equals(name) || GlobalContext.VARIABLES.getOrDefault(this.name()).ast().hasVar(name); }
 
     @Override
-    public String toStringInfix() {
-        return switch(this.name()) {
-            case "x" -> "x";
-            case "PI" -> "PI";
-            case "E" -> "E";
-            default -> GlobalContext.VARIABLES.getOrDefault(this.name()).toStringInfix();
-        };
+    public String toStringInfix(boolean printOutVariables) {
+        if (printOutVariables) {
+            return switch(this.name()) {
+                case "x" -> "x";
+                case "PI" -> "PI";
+                case "E" -> "E";
+                default -> GlobalContext.VARIABLES.getOrDefault(this.name()).toStringInfix(true);
+            };
+        }
+        return this.name();
     }
 
     @Override
-    public String toStringRPN() {
-        return switch(this.name()) {
-            case "x" -> "x";
-            case "pi" -> "pi";
-            case "e" -> "e";
-            default -> GlobalContext.VARIABLES.getOrDefault(this.name()).toStringRPN();
-        };
+    public String toStringRPN(boolean printOutVariables) {
+        if (printOutVariables) {
+            return switch (this.name()) {
+                case "x" -> "x";
+                case "PI" -> "PI";
+                case "E" -> "E";
+                default -> GlobalContext.VARIABLES.getOrDefault(this.name()).toStringRPN(true);
+            };
+        }
+        return this.name();
     }
 
     @Override

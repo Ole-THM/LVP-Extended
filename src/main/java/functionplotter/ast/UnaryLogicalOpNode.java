@@ -16,13 +16,13 @@ public record UnaryLogicalOpNode(ASTNodeI node, TOKEN_TYPE op) implements ASTNod
     public boolean hasVar(String name) { return this.node.hasVar(name); }
 
     @Override
-    public String toStringInfix() {
-        return "!" + this.node.toStringInfix();
+    public String toStringInfix(boolean printOutVariables) {
+        return "!" + this.node.toStringInfix(printOutVariables);
     }
 
     @Override
-    public String toStringRPN() {
-        return this.node.toStringRPN() + " !";
+    public String toStringRPN(boolean printOutVariables) {
+        return this.node.toStringRPN(printOutVariables) + " !";
     }
 
     @Override

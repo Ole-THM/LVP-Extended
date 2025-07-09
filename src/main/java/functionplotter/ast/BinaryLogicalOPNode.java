@@ -35,13 +35,13 @@ public record BinaryLogicalOPNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) 
     }
 
     @Override
-    public String toStringInfix() {
+    public String toStringInfix(boolean printOutVariables) {
         String leftStr = this.left instanceof BinaryOpNode lNode && precedence(lNode.op()) < precedence(this.op)
-                ? "(" + this.left.toStringInfix() + ")"
-                : this.left.toStringInfix();
+                ? "(" + this.left.toStringInfix(printOutVariables) + ")"
+                : this.left.toStringInfix(printOutVariables);
         String rightStr = this.right instanceof BinaryOpNode rNode && precedence(rNode.op()) <= precedence(this.op)
-                ? "(" + this.right.toStringInfix() + ")"
-                : this.right.toStringInfix();
+                ? "(" + this.right.toStringInfix(printOutVariables) + ")"
+                : this.right.toStringInfix(printOutVariables);
         return leftStr + " " + name() + " " + rightStr;
     }
 
@@ -54,8 +54,8 @@ public record BinaryLogicalOPNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) 
     }
 
     @Override
-    public String toStringRPN() {
-        return this.left.toStringRPN() + " " + this.right.toStringRPN() + " " + this.name();
+    public String toStringRPN(boolean printOutVariables) {
+        return this.left.toStringRPN(printOutVariables) + " " + this.right.toStringRPN(printOutVariables) + " " + this.name();
     }
 
     @Override

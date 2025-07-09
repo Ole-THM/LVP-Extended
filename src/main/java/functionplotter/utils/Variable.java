@@ -18,9 +18,9 @@ public record Variable(String name, AST ast) {
                 '}';
     }
 
-    public String toStringInfix() {
-        return this.ast.toStringInfix();
+    public String toStringInfix(boolean printOutVariables) {
+        return this.ast.toStringInfix(printOutVariables);
     }
 
-    public String toStringRPN() { return this.ast.toStringRPN(); }
+    public String toStringRPN(boolean printOutVariables) { return this.ast.toStringRPN(printOutVariables); }
 }

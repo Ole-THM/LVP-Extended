@@ -23,19 +23,19 @@ public record AST(ASTNodeI root) implements ASTNodeI {
         return this.root.hasVar(name);
     }
     @Override
-    public String toStringInfix() {
+    public String toStringInfix(boolean printOutVariables) {
         if (this.root == null) {
             throw new IllegalStateException("AST root is not set.");
         }
-        return this.root.toStringInfix();
+        return this.root.toStringInfix(printOutVariables);
     }
 
     @Override
-    public String toStringRPN() {
+    public String toStringRPN(boolean printOutVariables) {
         if (this.root == null) {
             throw new IllegalStateException("AST root is not set.");
         }
-        return this.root.toStringRPN();
+        return this.root.toStringRPN(printOutVariables);
     }
 
     @Override

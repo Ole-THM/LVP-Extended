@@ -88,101 +88,101 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
     }
 
     @Override
-    public String toStringInfix() {
+    public String toStringInfix(boolean printOutVariables) {
         return switch (functionName) {
-            case "sin" -> "sin(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "asin" -> "asin(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "sinh" -> "sinh(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "asinh" -> "asinh(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "cos" -> "cos(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "acos" -> "acos(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "cosh" -> "cosh(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "acosh" -> "acosh(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "tan" -> "tan(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "atan" -> "atan(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "tanh" -> "tanh(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "atanh" -> "atanh(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "sqrt" -> "sqrt(" + this.arguments.getFirst().toStringInfix() + ")";
+            case "sin" -> "sin(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "asin" -> "asin(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "sinh" -> "sinh(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "asinh" -> "asinh(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "cos" -> "cos(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "acos" -> "acos(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "cosh" -> "cosh(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "acosh" -> "acosh(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "tan" -> "tan(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "atan" -> "atan(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "tanh" -> "tanh(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "atanh" -> "atanh(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "sqrt" -> "sqrt(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
             case "root" -> this.arguments.size() == 2
-                    ? "root(" + this.arguments.getFirst().toStringInfix() + ", " + this.arguments.get(1).toStringInfix() + ")"
-                    : "sqrt(" + this.arguments.getFirst().toStringInfix() + ")";
+                    ? "root(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ", " + this.arguments.get(1).toStringInfix(printOutVariables) + ")"
+                    : "sqrt(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
             case "log" -> "log(" + (this.arguments.size() == 2
-                    ? this.arguments.getFirst().toStringInfix() + ", " + this.arguments.get(1).toStringInfix()
-                    : this.arguments.getFirst().toStringInfix()) + ")";
-            case "ln" -> "ln(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "abs" -> "abs(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "gamma" -> "gamma(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "factorial" -> "factorial(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "heaviside" -> "heaviside(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "signum" -> "signum(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "min" -> "min(" + this.arguments.getFirst().toStringInfix() + ", " + this.arguments.get(1).toStringInfix() + ")";
-            case "max" -> "max(" + this.arguments.getFirst().toStringInfix() + ", " + this.arguments.get(1).toStringInfix() + ")";
+                    ? this.arguments.getFirst().toStringInfix(printOutVariables) + ", " + this.arguments.get(1).toStringInfix(printOutVariables)
+                    : this.arguments.getFirst().toStringInfix(printOutVariables)) + ")";
+            case "ln" -> "ln(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "abs" -> "abs(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "gamma" -> "gamma(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "factorial" -> "factorial(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "heaviside" -> "heaviside(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "signum" -> "signum(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "min" -> "min(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ", " + this.arguments.get(1).toStringInfix(printOutVariables) + ")";
+            case "max" -> "max(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ", " + this.arguments.get(1).toStringInfix(printOutVariables) + ")";
             case "gauss" -> {
-                String x = this.arguments.getFirst().toStringInfix();
-                String sigma = this.arguments.size() >= 2 ? this.arguments.get(1).toStringInfix() : "1.0";
-                String mu = this.arguments.size() >= 3 ? this.arguments.get(2).toStringInfix() : "0.0";
+                String x = this.arguments.getFirst().toStringInfix(printOutVariables);
+                String sigma = this.arguments.size() >= 2 ? this.arguments.get(1).toStringInfix(printOutVariables) : "1.0";
+                String mu = this.arguments.size() >= 3 ? this.arguments.get(2).toStringInfix(printOutVariables) : "0.0";
                 yield "gauss(" + x + ", " + sigma + ", " + mu + ")";
             }
             case "logistic" -> {
-                String x = this.arguments.getFirst().toStringInfix();
-                String L = this.arguments.size() >= 2 ? this.arguments.get(1).toStringInfix() : "1.0";
-                String k = this.arguments.size() >= 3 ? this.arguments.get(2).toStringInfix() : "1.0";
-                String x0 = this.arguments.size() >= 4 ? this.arguments.get(3).toStringInfix() : "0.0";
+                String x = this.arguments.getFirst().toStringInfix(printOutVariables);
+                String L = this.arguments.size() >= 2 ? this.arguments.get(1).toStringInfix(printOutVariables) : "1.0";
+                String k = this.arguments.size() >= 3 ? this.arguments.get(2).toStringInfix(printOutVariables) : "1.0";
+                String x0 = this.arguments.size() >= 4 ? this.arguments.get(3).toStringInfix(printOutVariables) : "0.0";
                 yield "logistic(" + x + ", " + L + ", " + k + ", " + x0 + ")";
             }
-            case "square" -> "square(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "sawtooth" -> "sawtooth(" + this.arguments.getFirst().toStringInfix() + ")";
-            case "triangle" -> "triangle(" + this.arguments.getFirst().toStringInfix() + ")";
+            case "square" -> "square(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "sawtooth" -> "sawtooth(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
+            case "triangle" -> "triangle(" + this.arguments.getFirst().toStringInfix(printOutVariables) + ")";
             default -> throw new UnsupportedOperationException("Unsupported function: " + functionName);
         };
     }
 
     @Override
-    public String toStringRPN() {
+    public String toStringRPN(boolean printOutVariables) {
         return switch (functionName) {
-            case "sin" -> this.arguments.getFirst().toStringRPN() + " sin";
-            case "asin" -> this.arguments.getFirst().toStringRPN() + " asin";
-            case "sinh" -> this.arguments.getFirst().toStringRPN() + " sinh";
-            case "asinh" -> this.arguments.getFirst().toStringRPN() + " asinh";
-            case "cos" -> this.arguments.getFirst().toStringRPN() + " cos";
-            case "acos" -> this.arguments.getFirst().toStringRPN() + " acos";
-            case "cosh" -> this.arguments.getFirst().toStringRPN() + " cosh";
-            case "acosh" -> this.arguments.getFirst().toStringRPN() + " acosh";
-            case "tan" -> this.arguments.getFirst().toStringRPN() + " tan";
-            case "atan" -> this.arguments.getFirst().toStringRPN() + " atan";
-            case "tanh" -> this.arguments.getFirst().toStringRPN() + " tanh";
-            case "atanh" -> this.arguments.getFirst().toStringRPN() + " atanh";
-            case "sqrt" -> this.arguments.getFirst().toStringRPN() + " sqrt";
+            case "sin" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " sin";
+            case "asin" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " asin";
+            case "sinh" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " sinh";
+            case "asinh" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " asinh";
+            case "cos" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " cos";
+            case "acos" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " acos";
+            case "cosh" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " cosh";
+            case "acosh" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " acosh";
+            case "tan" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " tan";
+            case "atan" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " atan";
+            case "tanh" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " tanh";
+            case "atanh" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " atanh";
+            case "sqrt" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " sqrt";
             case "root" -> this.arguments.size() == 2
-                    ? this.arguments.getFirst().toStringInfix() + " " + this.arguments.get(1).toStringInfix() + " root"
-                    : this.arguments.getFirst().toStringInfix() + "sqrt";
+                    ? this.arguments.getFirst().toStringRPN(printOutVariables) + " " + this.arguments.get(1).toStringRPN(printOutVariables) + " root"
+                    : this.arguments.getFirst().toStringRPN(printOutVariables) + "sqrt";
             case "log" -> (this.arguments.size() == 2
-                    ? this.arguments.getFirst().toStringRPN() + " " + this.arguments.get(1).toStringRPN()
-                    : this.arguments.getFirst().toStringRPN()) + " log";
-            case "ln" -> this.arguments.getFirst().toStringRPN() + " ln";
-            case "abs" -> this.arguments.getFirst().toStringRPN() + " abs";
-            case "gamma" -> this.arguments.getFirst().toStringRPN() + " gamma";
-            case "factorial" -> this.arguments.getFirst().toStringRPN() + " factorial";
-            case "heaviside" -> this.arguments.getFirst().toStringRPN() + " heaviside";
-            case "signum" -> this.arguments.getFirst().toStringRPN() + " signum";
-            case "min" -> this.arguments.getFirst().toStringRPN() + " " + this.arguments.get(1).toStringRPN() + " min";
-            case "max" -> this.arguments.getFirst().toStringRPN() + " " + this.arguments.get(1).toStringRPN() + " max";
+                    ? this.arguments.getFirst().toStringRPN(printOutVariables) + " " + this.arguments.get(1).toStringRPN(printOutVariables)
+                    : this.arguments.getFirst().toStringRPN(printOutVariables)) + " log";
+            case "ln" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " ln";
+            case "abs" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " abs";
+            case "gamma" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " gamma";
+            case "factorial" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " factorial";
+            case "heaviside" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " heaviside";
+            case "signum" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " signum";
+            case "min" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " " + this.arguments.get(1).toStringRPN(printOutVariables) + " min";
+            case "max" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " " + this.arguments.get(1).toStringRPN(printOutVariables) + " max";
             case "gauss" -> {
-                String x = this.arguments.getFirst().toStringRPN();
-                String sigma = this.arguments.size() >= 2 ? this.arguments.get(1).toStringRPN() : "1.0";
-                String mu = this.arguments.size() >= 3 ? this.arguments.get(2).toStringRPN() : "0.0";
+                String x = this.arguments.getFirst().toStringRPN(printOutVariables);
+                String sigma = this.arguments.size() >= 2 ? this.arguments.get(1).toStringRPN(printOutVariables) : "1.0";
+                String mu = this.arguments.size() >= 3 ? this.arguments.get(2).toStringRPN(printOutVariables) : "0.0";
                 yield x + " " + sigma + " " + mu + " gauss";
             }
             case "logistic" -> {
-                String x = this.arguments.getFirst().toStringRPN();
-                String L = this.arguments.size() >= 2 ? this.arguments.get(1).toStringRPN() : "1.0";
-                String k = this.arguments.size() >= 3 ? this.arguments.get(2).toStringRPN() : "1.0";
-                String x0 = this.arguments.size() >= 4 ? this.arguments.get(3).toStringRPN() : "0.0";
+                String x = this.arguments.getFirst().toStringRPN(printOutVariables);
+                String L = this.arguments.size() >= 2 ? this.arguments.get(1).toStringRPN(printOutVariables) : "1.0";
+                String k = this.arguments.size() >= 3 ? this.arguments.get(2).toStringRPN(printOutVariables) : "1.0";
+                String x0 = this.arguments.size() >= 4 ? this.arguments.get(3).toStringRPN(printOutVariables) : "0.0";
                 yield x + " " + L + " " + k + " " + x0 + " logistic";
             }
-            case "square" -> this.arguments.getFirst().toStringRPN() + " square";
-            case "sawtooth" -> this.arguments.getFirst().toStringRPN() + " sawtooth";
-            case "triangle" -> this.arguments.getFirst().toStringRPN() + " triangle";
+            case "square" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " square";
+            case "sawtooth" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " sawtooth";
+            case "triangle" -> this.arguments.getFirst().toStringRPN(printOutVariables) + " triangle";
             default -> throw new UnsupportedOperationException("Unsupported function: " + functionName);
         };
     }

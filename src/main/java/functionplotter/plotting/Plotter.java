@@ -69,8 +69,8 @@ public class Plotter {
         StringBuilder res = new StringBuilder();
         Integer prevXPos = null, prevYPos = null;
         Double prevY = null;
-//        System.out.println("Plotter.plotFunction: " + coloredNode.ast().toStringInfix());
-        if (coloredNode.ast().toStringInfix().equals("0") || !coloredNode.ast().hasVar("x")) { //! not an elegant solution (Problem: Emtpy expressions should not be plotted)
+        System.out.println("Plotter.plotFunction: " + coloredNode.ast().toStringInfix(true));
+        if (coloredNode.ast().toStringInfix(true).equals("0") || !coloredNode.ast().hasVar("x")) { //! not an elegant solution (Problem: Emtpy expressions should not be plotted)
             return res.toString(); // Skip empty expressions
         }
         for (double x = xMin; x <= xMax ; x += getStepSize()) {

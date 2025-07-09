@@ -16,18 +16,18 @@ public record ValueNode(double value) implements ASTNodeI {
     public boolean hasVar(String name) { return false; }
 
     @Override
-    public String toStringInfix() {
+    public String toStringInfix(boolean printOutVariables) {
         return (int) this.value == this.value ? String.format("%d", (int) this.value) : String.format("%.4f", this.value);
     }
 
     @Override
-    public String toStringRPN() {
-        return this.toStringInfix();
+    public String toStringRPN(boolean printOutVariables) {
+        return this.toStringInfix(printOutVariables);
     }
 
     @Override
     public String toDotGraph() {
-        return "\"" + this.getId() + "\" [label=\"" + this.toStringInfix() + "\"];\n";
+        return "\"" + this.getId() + "\" [label=\"" + this.toStringInfix(false) + "\"];\n";
     }
 
     @Override

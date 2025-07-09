@@ -28,18 +28,18 @@ public record BinaryOpNode(ASTNodeI left, TOKEN_TYPE op, ASTNodeI right) impleme
     }
 
     @Override
-    public String toStringInfix() {
+    public String toStringInfix(boolean printOutVariables) {
         String leftStr = left instanceof BinaryOpNode lNode && precedence(lNode.op()) < precedence(this.op)
-                ? "(" + left.toStringInfix() + ")"
-                : left.toStringInfix();
+                ? "(" + left.toStringInfix(printOutVariables) + ")"
+                : left.toStringInfix(printOutVariables);
         String rightStr = right instanceof BinaryOpNode rNode && precedence(rNode.op()) <= precedence(this.op)
-                ? "(" + right.toStringInfix() + ")"
-                : right.toStringInfix();
+                ? "(" + right.toStringInfix(printOutVariables) + ")"
+                : right.toStringInfix(printOutVariables);
         return leftStr + " " + name() + " " + rightStr;
     }
 
     @Override
-    public String toStringRPN() { return this.left.toStringRPN() + " " + this.right.toStringRPN() + " " + name(); }
+    public String toStringRPN(boolean printOutVariables) { return this.left.toStringRPN(printOutVariables) + " " + this.right.toStringRPN(printOutVariables) + " " + name(); }
 
     @Override
     public String name() {

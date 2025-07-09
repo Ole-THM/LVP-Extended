@@ -22,20 +22,20 @@ public record UnaryOpNode(ASTNodeI node, TOKEN_TYPE op) implements ASTNodeI {
     public boolean hasVar(String name) { return this.node.hasVar(name); }
 
     @Override
-    public String toStringInfix() {
+    public String toStringInfix(boolean printOutVariables) {
         return switch (op) {
-            case PLUS -> this.node.toStringInfix(); // Unary plus, no change
-            case UNARYMINUS -> "¯" + this.node.toStringInfix(); // Unary minus, negate the astNode
+            case PLUS -> this.node.toStringInfix(printOutVariables); // Unary plus, no change
+            case UNARYMINUS -> "¯" + this.node.toStringInfix(printOutVariables); // Unary minus, negate the astNode
             default -> throw new UnsupportedOperationException("Unsupported operation: " + op);
         };
 
     }
 
     @Override
-    public String toStringRPN() {
+    public String toStringRPN(boolean printOutVariables) {
         return switch (op) {
-            case PLUS -> this.node.toStringInfix(); // Unary plus, no change
-            case UNARYMINUS -> this.node.toStringInfix() + "¯"; // Unary minus, negate the astNode
+            case PLUS -> this.node.toStringRPN(printOutVariables); // Unary plus, no change
+            case UNARYMINUS -> this.node.toStringRPN(printOutVariables) + "¯"; // Unary minus, negate the astNode
             default -> throw new UnsupportedOperationException("Unsupported operation: " + op);
         };
     }

@@ -14,13 +14,13 @@ public record TernaryOpNode(ASTNodeI condition, ASTNodeI trueValue, ASTNodeI fal
     public boolean hasVar(String name) { return condition.hasVar(name) || trueValue.hasVar(name) || falseValue.hasVar(name); }
 
     @Override
-    public String toStringInfix() { return condition.toStringInfix() + " ? " + trueValue.toStringInfix() + " : " + falseValue.toStringInfix(); }
+    public String toStringInfix(boolean printOutVariables) { return condition.toStringInfix(printOutVariables) + " ? " + trueValue.toStringInfix(printOutVariables) + " : " + falseValue.toStringInfix(printOutVariables); }
 
     @Override
-    public String toStringRPN() {
-        return condition.toStringRPN() + " " +
-                trueValue.toStringRPN() + " " +
-                falseValue.toStringRPN() + " ?:";
+    public String toStringRPN(boolean printOutVariables) {
+        return condition.toStringRPN(printOutVariables) + " " +
+                trueValue.toStringRPN(printOutVariables) + " " +
+                falseValue.toStringRPN(printOutVariables) + " ?:";
     }
 
 
