@@ -1,6 +1,5 @@
 package functionplotter.ast;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,8 +16,6 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
         }
         return newArguments;
     }
-
-
 
     @Override
     public double evaluate() {
@@ -79,9 +76,7 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
     @Override
     public boolean hasVar(String name) {
         for (ASTNodeI arg : this.arguments) {
-            System.out.println("Searching " + name + " in " + arg);
             if (arg != null && arg.hasVar(name)) {
-                System.out.println("Found " + name + " in " + arg.name());
                 return true;
             }
         }
@@ -113,7 +108,7 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
                     : "sqrt(" + this.arguments.getFirst().toStringInfix() + ")";
             case "log" -> "log(" + (this.arguments.size() == 2
                     ? this.arguments.getFirst().toStringInfix() + ", " + this.arguments.get(1).toStringInfix()
-                    : String.format("%.4f", Math.E) + ", " + this.arguments.getFirst().toStringInfix()) + ")";
+                    : this.arguments.getFirst().toStringInfix()) + ")";
             case "ln" -> "ln(" + this.arguments.getFirst().toStringInfix() + ")";
             case "abs" -> "abs(" + this.arguments.getFirst().toStringInfix() + ")";
             case "gamma" -> "gamma(" + this.arguments.getFirst().toStringInfix() + ")";
@@ -163,7 +158,7 @@ public record FunctionCallNode(String functionName, List<ASTNodeI> arguments) im
                     : this.arguments.getFirst().toStringInfix() + "sqrt";
             case "log" -> (this.arguments.size() == 2
                     ? this.arguments.getFirst().toStringRPN() + " " + this.arguments.get(1).toStringRPN()
-                    : String.format("%.4f", Math.E) + ", " + this.arguments.getFirst().toStringRPN()) + " log";
+                    : this.arguments.getFirst().toStringRPN()) + " log";
             case "ln" -> this.arguments.getFirst().toStringRPN() + " ln";
             case "abs" -> this.arguments.getFirst().toStringRPN() + " abs";
             case "gamma" -> this.arguments.getFirst().toStringRPN() + " gamma";
