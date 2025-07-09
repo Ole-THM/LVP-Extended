@@ -2,6 +2,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import functionplotter.ast.AST;
+import functionplotter.ast.ValueNode;
+import functionplotter.ast.VariableNode;
 import functionplotter.parsing.parser.Parser;
 import functionplotter.plotting.Plotter;
 import functionplotter.plotting.utils.ColoredNode;
@@ -20,25 +23,37 @@ void main() throws ParseException {
 
     // Display range
 
-    String xMin = "-5"; // X-Achse Minimum
-    String xMax = "5"; // X-Achse Maximum
+    String xMin = "-2*pi"; // X-Achse Minimum
+    String xMax = "2 * pi"; // X-Achse Maximum
     String yMin = "-5"; // Y-Achse Minimum
-    String yMax = "5"; // Y-Achse Maximum
+    String yMax = "10"; // Y-Achse Maximum
 
-    XYRange xyRange = new XYRange(
-        Parser.parse(xMin).evaluate(),
-        Parser.parse(xMax).evaluate(),
-        Parser.parse(yMin).evaluate(),
-        Parser.parse(yMax).evaluate()
-    );
+    XYRange xyRange;
+    try {
+        xyRange = new XYRange(
+            Parser.parse(xMin).evaluate(),
+            Parser.parse(xMax).evaluate(),
+            Parser.parse(yMin).evaluate(),
+            Parser.parse(yMax).evaluate()
+        );
+    } catch(ParseException e) {
+        System.out.println("Fehler beim Parsen der XYRange: " + e.getMessage());
+        xyRange = XYRange.DEFAULT_RANGE();
+    }
 
     // Expressions
 
-    String complexExpression = "!(x > 0 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+1, 2) * sqrt(abs(a)) : tan(x) + ln(a)) && (b <= 5 || c != 3) ? (¯x + a*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
-    String func_1 = "logistic(1,2,3,x)"; // Funktion 1
+    String complexExpression = "!(x > 1 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+b+1, 2) * sqrt(abs(a+c)) : tan(x+d) + ln(a+d)) && (b <= 5 || c != 3) ? (¯x + e*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
+    String complexExpression_2 = "!(x > 1) || (sin(x^2) >= cos((x+b)/2) ? log(x+c+1, 2) * sqrt(abs(x+d)) : tan(x+a) + ln(x+b)) && (x <= 5 || x != 3) ? (x + 2)^3 / (4 - x) : (x >= 2 ? sin(x)*cos(x) : log(x) + sqrt(x^2 + 1))";
+    String complexExpression_3 = "!(x > 1 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+b+1, 2) * sqrt(abs(a+c)) : tan(x+d) + ln(a+d)) && (b <= 5 || c != 3) ? (¯x + e*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
+    String complexExpression_4 = "!(x > 1) || (sin(x^2) >= cos((x+b)/2) ? log(x+c+1, 2) * sqrt(abs(x+d)) : tan(x+a) + ln(x+b)) && (x <= 5 || x != 3) ? (x + 2)^3 / (4 - x) : (x >= 2 ? sin(x)*cos(x) : log(x) + sqrt(x^2 + 1))";
+    String complexExpression_5 = "max(sinh(a+b) + cosh(c-d) - tanh(e*x), min(asinh(a^2) * acosh(b+1), atanh(c-d) + log(abs(e)+2, 3))) + sqrt(abs(a*b-c*d+e*x)) - ln(max(a, b, c, d, e, x))";
+    String complexExpression_6 = "sqrt(abs((a+b-c*d)/(e+x))) + log(min(a^2+b^2, c^2+d^2), 5) * sinh(x) - cosh(a-b) + tanh(c+d) + asinh(e-x) - acosh(a+b+c) + atanh(d-e) + ln(abs(x+a+b))";
+    String complexExpression_7 = "min(max(a, b) + sinh(c) - cosh(d) + tanh(e), sqrt(abs(a*b-c*d+e*x)) + log(a+b+c+d+e+x, 7)) * (asinh(a) + acosh(b) - atanh(c) + ln(d+e+x))";
+    String func_1 = complexExpression; //Funktion 1
     String func_2 = ""; // Funktion 2
-    String func_3 = "x asinh"; // Funktion 3
-    String func_4 = "sin(x) + cos(b^2) - sqrt(abs(¯4))"; // Funktion 4
+    String func_3 = ""; // Funktion 3
+    String func_4 = ""; // Funktion 4
     String func_5 = ""; // Funktion 5
 
     String scalingFunction = "x"; // Skalier Funktion
@@ -54,33 +69,83 @@ void main() throws ParseException {
     );
 
     // Variables
+    String exampleExpr_1 = "((sin(x) + x^2 > 0 ? sqrt(abs(x)) : log(x+2)) + (cosh(x) - E * sinh(x)) * (x > 5 ? max(sin(x), cos(x)) : min(tan(x), 2*x))) / (asinh(abs(x-3)) + 1)";
+    String exampleExpr_2 = "((x < 0 || cos(x) >= 0.5 ? tan(x) : abs(x-3)) + (asin(x/10) * acosh(abs(x)+1)) - (x > 2 && x < 8 ? log(x+5, 2) : ln(abs(x)+3)))";
+    String exampleExpr_3 = "x == 0 ? 1 : x > 0 ? (x^3 + sin(x) * cos(x) - PI * tanh(x) + sqrt(abs(x))) : (-x + asinh(x) - acosh(abs(x)+2) + atanh(x/10))";
+    String exampleExpr_4 = "!(x <= 2) && ((x^2 - 4 > 0 ? x/2 : x*2) + (min(sin(x), cos(x)) * max(log(abs(x)+1, 3), ln(x+4)))) || (abs(x) > 10 ? sqrt(x^2+1) : tan(x) - atan(x))";
+    String exampleExpr_5 = "x > 1 && x < 10 ? (sin(x) * log(x) + cosh(x) - sinh(x) + min(x^2, abs(x-5))) : (cos(x) + sqrt(abs(x)) + max(ln(x+2), asinh(x/2)))";
 
-    String var_1 = "1"; // Variable a
-    String var_2 = "2"; // Variable b
-    String var_3 = "3"; // Variable c
-    String var_4 = "4"; // Variable d
-    String var_5 = "5"; // Variable e
+    String var_1 = exampleExpr_1; // Variable a
+    String var_2 = exampleExpr_3; // Variable b
+    String var_3 = exampleExpr_5; // Variable c
+    String var_4 = exampleExpr_4; // Variable d
+    String var_5 = exampleExpr_2; // Variable e
 
+    AST var_1AST;
+    AST var_2AST;
+    AST var_3AST;
+    AST var_4AST;
+    AST var_5AST;
+
+    try {
+        var_1AST = Parser.parse(var_1);
+        var_2AST = Parser.parse(var_2);
+        var_3AST = Parser.parse(var_3);
+        var_4AST = Parser.parse(var_4);
+        var_5AST = Parser.parse(var_5);
+        if (var_1AST.hasVar("a")) {
+            System.out.println("Variablen dürfen sich nicht selbst enthalten: a = \"" + var_1 + "\"");
+            var_1AST = new AST(new ValueNode(1));
+            var_1 = "1"; // Fallback to a default value if variable contains itself
+        }
+        if (var_2AST.hasVar("b")) {
+            System.out.println("Variablen dürfen sich nicht selbst enthalten: b = \"" + var_2 + "\"");
+            var_2AST = new AST(new ValueNode(2));
+            var_2 = "2"; // Fallback to a default value if variable contains itself
+        }
+        if (var_3AST.hasVar("c")) {
+            System.out.println("Variablen dürfen sich nicht selbst enthalten: c = \"" + var_3 + "\"");
+            var_3AST = new AST(new ValueNode(3));
+            var_3 = "3"; // Fallback to a default value if variable contains itself
+        }
+        if (var_4AST.hasVar("d")) {
+            System.out.println("Variablen dürfen sich nicht selbst enthalten: d = \"" + var_4 + "\"");
+            var_4AST = new AST(new ValueNode(4));
+            var_4 = "4"; // Fallback to a default value if variable contains itself
+        }
+        if (var_5AST.hasVar("e")) {
+            System.out.println("Variablen dürfen sich nicht selbst enthalten: e = \"" + var_5 + "\"");
+            var_5AST = new AST(new ValueNode(5));
+            var_5 = "5"; // Fallback to a default value if variable contains itself
+        }
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen der Variable a: " + e.getMessage());
+        var_1AST = new AST(new ValueNode(1)); // Fallback to a default value if parsing fails
+        var_2AST = new AST(new ValueNode(2));
+        var_3AST = new AST(new ValueNode(3));
+        var_4AST = new AST(new ValueNode(4));
+        var_5AST = new AST(new ValueNode(5));
+    }
     GlobalContext.VARIABLES.add(
             new Variable(
                     "a",
-                    Parser.parse(var_1)
+                    var_1AST
             ),
             new Variable(
                     "b",
-                    Parser.parse(var_2)
+                    var_2AST
             ),
             new Variable(
                     "c",
-                    Parser.parse(var_3)
+                    var_3AST
             ),
             new Variable(
                     "d",
-                    Parser.parse(var_4)
+                    var_4AST
             ),
             new Variable(
                     "e",
-                    Parser.parse(var_5)
+                    var_5AST
             )
     );
 
@@ -116,7 +181,11 @@ void main() throws ParseException {
                     ColorPicker.getNextColor()
             );
         } catch (ParseException e) {
-            throw new RuntimeException("Fehler beim Parsen des Ausdrucks: " + expr, e);
+            System.out.println("Fehler beim Parsen des Ausdrucks: " + e.getMessage());
+            return new ColoredNode(
+                    new AST(new ValueNode(0)), // Fallback to a default value if parsing fails
+                    ColorPicker.getNextColor()
+            );
         }
     }).toArray(ColoredNode[]::new);
 
@@ -154,14 +223,24 @@ void main() throws ParseException {
         ### Anzeige
         """);
 
+    AST scalingAST = new AST(new VariableNode("x"));
+
+    try {
+        Parser.parse(scalingFunction.equals("") ? "x" : scalingFunction);
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen der Skalierfunktion: " + e.getMessage());
+    }
+
     Clerk.markdown(
         Plotter.plot(
-            xyRange,
-            new OutPutDimension(1000, 700),
-            Parser.parse(scalingFunction),
-            scale,
-            useSmartRange,
-            expressionsAsColoredNodes
+            PlottingConfig.getConfig(
+                xyRange,
+                new OutPutDimension(1000, 700),
+                scalingAST,
+                scale,
+                useSmartRange,
+                expressionsAsColoredNodes
+            )
         )
     );
 
@@ -244,6 +323,7 @@ void main() throws ParseException {
 
     // Div: Input
     Clerk.markdown("""
+        # Anleitung
         ## 1. Eingabe
         """);
     Clerk.markdown("""
@@ -265,13 +345,22 @@ void main() throws ParseException {
     Clerk.markdown("""
         ### 1.2 Eingabe einer Variable
         Geben Sie eine Variable, in Form eines simplen Wertes (z. B. `10, -4.2`), eines arithmetischen Ausdrucks (z. B. `sqrt(x), log(69)`) oder in Form von vordefinierten Konstanten (z. B. `e, pi`) ein.
+        **ACHTUNG:** Variablen können auch andere Variablen referenzieren, dies kann zu zirkulären Abhängigkeiten führen, was zu einem StackOverFlow führen wird.
         """);
 
     // Variable Input
     String inputVar = "x cos";
+    AST inputVarAST;
+    try {
+        inputVarAST = Parser.parse(inputVar);
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen der Variable v: " + e.getMessage());
+        inputVarAST = new AST(new ValueNode(1));
+    }
+
     GlobalContext.VARIABLES.add(
             new Variable(
-                    "v", Parser.parse(inputVar)
+                    "v", inputVarAST
             )
     );
 
@@ -288,6 +377,14 @@ void main() throws ParseException {
         """);
 
     String inputExprWithVar = "e^x"; // Ausdruck mit Variable
+    AST inputExprWithVarAST;
+    try {
+        inputExprWithVarAST = Parser.parse(inputVar);
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen des Ausdrucks \"Ausdruck mit Variable\": " + e.getMessage());
+        inputExprWithVarAST = new AST(new VariableNode("x"));
+    }
+
     Clerk.write(
             Interaction.input(
                     "./src/main/java/start.java", "// Ausdruck mit Variable",
@@ -304,7 +401,7 @@ void main() throws ParseException {
     // AST Example
     Dot astDot = new Dot();
     astDot.draw(
-        Parser.parse(inputExprWithVar).toDotGraph()
+        inputExprWithVarAST.toDotGraph()
     );
 
     // Div: Infix & UPN
@@ -318,6 +415,19 @@ void main() throws ParseException {
     String xMaxTutorial = "5"; // X-Achse Max
     String yMinTutorial = "-10"; // Y-Achse Min
     String yMaxTutorial = "10"; // Y-Achse Max
+
+    XYRange xyRangeTutorial;
+    try {
+        xyRangeTutorial = new XYRange(
+                Parser.parse(xMinTutorial).evaluate(),
+                Parser.parse(xMaxTutorial).evaluate(),
+                Parser.parse(yMinTutorial).evaluate(),
+                Parser.parse(yMaxTutorial).evaluate()
+        );
+    } catch(ParseException e) {
+        System.out.println("Fehler beim Parsen der XYRange im Abschnitt 3.1 Werte- & Definitions-Bereich: " + e.getMessage());
+        xyRangeTutorial = XYRange.DEFAULT_RANGE();
+    }
 
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// X-Achse Min",
@@ -357,23 +467,30 @@ void main() throws ParseException {
         Aus diesem Grund werden vorgefertigte Skalierungen wie `logarithmisch` und Skalierungen für `Kreisfunktionen` bereitgestellt.
         """);
     String scalingFunctionTutorial = "x"; // Skalier Funktion Beispiel
+    AST scalingFunctionTutorialAST;
+    try {
+        scalingFunctionTutorialAST = Parser.parse(scalingFunctionTutorial);
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen der Skalierfunktion im Abschnitt 3.2 Skalierung: " + e.getMessage());
+        scalingFunctionTutorialAST = new AST(new VariableNode("x"));
+    }
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// Skalier Funktion Beispiel",
             "String scalingFunctionTutorial = \"$\";",
             scalingFunctionTutorial.equals("") ? "x" : scalingFunctionTutorial));
 
     boolean logScaleTutorial = false; // Logarithmische Skalierung
-    Boolean trigScaleTutorial = false; // Trigonometrische Skalierung
+    boolean trigScaleTutorial = false; // Trigonometrische Skalierung
 
     SCALING scaleTutorial = scaleHandler(logScaleTutorial, trigScaleTutorial);
     Clerk.write(Interaction.checkbox(
         "./src/main/java/start.java", "// Logarithmische Skalierung",
-        "Boolean logScaleTutorial = $;",
+        "boolean logScaleTutorial = $;",
         logScaleTutorial
     ));
     Clerk.write(Interaction.checkbox(
         "./src/main/java/start.java", "// Trigonometrische Skalierung",
-        "Boolean trigScaleTutorial = $;",
+        "boolean trigScaleTutorial = $;",
         trigScaleTutorial
     ));
 
@@ -382,7 +499,7 @@ void main() throws ParseException {
         Mit der Angabe von `Smart Range` lässt sich einstellen, ob der manuel eingegebene Bereich verwendet wird, oder ob das Programm selbst einen Bereich ermitteln soll.
         """);
 
-    boolean useSmartRangeTutorial = false; // Use Smart Range
+    boolean useSmartRangeTutorial = true; // Use Smart Range
 
     Clerk.write(Interaction.checkbox(
         "./src/main/java/start.java", "// Use Smart Range",
@@ -394,31 +511,28 @@ void main() throws ParseException {
         ## 4. Funktionsplot im Koordinatensystem
         Die Funktion wird im Bereich x = `${0}` bis x = `${1}` geplottet.
         """, useSmartRangeTutorial
-                ? XYRangeRecommender.recommendRange(Parser.parse(inputExprWithVar)).xMin()
+                ? XYRangeRecommender.recommendRange(inputExprWithVarAST).xMin()
                 : xMinTutorial,
             useSmartRangeTutorial
-                ? XYRangeRecommender.recommendRange(Parser.parse(inputExprWithVar)).xMax()
+                ? XYRangeRecommender.recommendRange(inputExprWithVarAST).xMax()
                 : xMaxTutorial
     ));
 
     // Plotter Output
     Clerk.markdown(
-            Plotter.plot(
-                    new XYRange(
-                            Parser.parse(xMinTutorial).evaluate(),
-                            Parser.parse(xMaxTutorial).evaluate(),
-                            Parser.parse(yMinTutorial).evaluate(),
-                            Parser.parse(yMaxTutorial).evaluate()
-                    ),
-                    new OutPutDimension(1000, 700),
-                    Parser.parse(scalingFunctionTutorial),
-                    scaleTutorial,
-                    useSmartRangeTutorial,
-                    new ColoredNode(
-                            Parser.parse(inputExprWithVar),
-                            ColorPicker.getNextColor()
-                    )
+        Plotter.plot(
+            PlottingConfig.getConfig(
+                xyRangeTutorial,
+                new OutPutDimension(1000, 700),
+                scalingFunctionTutorialAST,
+                scaleTutorial,
+                useSmartRangeTutorial,
+                new ColoredNode(
+                    inputExprWithVarAST,
+                    ColorPicker.getNextColor()
+                )
             )
+        )
     );
 
     // Logical Expressions
@@ -428,7 +542,7 @@ void main() throws ParseException {
         Um logische Ausdrücke mit den vorhandenen arithmetischen Ausdrücken kompatibel zu machen und sinnvoll darstellen zu können, muss zuerst definiert werden wann ein arithmetischer Ausdruck `true` oder `false` ist.
         In diesem Fall habe ich mich dazu entschieden alle `positiven Werte` als `true` und alle `negativen Werte und 0` als `false` zu behandeln.
         So ist sichergestellt, dass alle Ausdrücke sowohl als *arithmetisch*, als auch als *logisch* behandelt werden können.
-        UMgekehrt werden logische Vergleiche stets einen `Wahrheitswert ∈ {0, 1}` zurückgeben.
+        Umgekehrt werden logische Vergleiche stets einen `Wahrheitswert ∈ {0, 1}` zurückgeben.
         ### 5.1 Unterstützte Operanden
         Es werden alle grundlegenden logischen Operationen unterstützt, eine vollständige Liste aller unterstützten Operanden und Funktionen ist unter `6. Liste aller unterstützten Operanden und Funktionen` zu finden.
         ### 5.2 Beispiel
@@ -436,6 +550,14 @@ void main() throws ParseException {
         """);
 
     String booleanExpressionTutorial = "f ? g : h"; // Logischer Ausdruck
+    AST booleanExpressionTutorialAST;
+    try {
+        booleanExpressionTutorialAST = Parser.parse(booleanExpressionTutorial);
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen des logischen Ausdrucks: " + e.getMessage());
+        booleanExpressionTutorialAST = new AST(new VariableNode("x")); // Fallback to a default value if parsing fails
+    }
+
 
     Clerk.write(Interaction.input(
         "./src/main/java/start.java", "// Logischer Ausdruck",
@@ -452,20 +574,26 @@ void main() throws ParseException {
         ##
         """);
 
-    GlobalContext.VARIABLES.add(
-            new Variable(
-                    "f",
-                    Parser.parse(booleanVarTutorial_1)
-            ),
-            new Variable(
-                    "g",
-                    Parser.parse(booleanVarTutorial_2)
-            ),
-            new Variable(
-                    "h",
-                    Parser.parse(booleanVarTutorial_3)
-            )
-    );
+    try {
+        GlobalContext.VARIABLES.add(
+                new Variable(
+                        "f",
+                        Parser.parse(booleanVarTutorial_1)
+                ),
+                new Variable(
+                        "g",
+                        Parser.parse(booleanVarTutorial_2)
+                ),
+                new Variable(
+                        "h",
+                        Parser.parse(booleanVarTutorial_3)
+                )
+        );
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen der Variablen im Abschnitt 5.2 Beispiel: " + e.getMessage());
+        GlobalContext.VARIABLES.addDefaultVariables();
+    }
+
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// Logische Variable f",
             "String booleanVarTutorial_1 = \"$\";",
@@ -490,17 +618,19 @@ void main() throws ParseException {
 
     Clerk.markdown(
         Plotter.plot(
-            new XYRange(
-                Parser.parse("-3*pi").evaluate(),Parser.parse("3*pi").evaluate(),
-                -5,5
-            ),
-            new OutPutDimension(1000, 700),
-            Parser.parse("x"),
-            SCALING.TRIGONOMETRIC,
-            false,
-            new ColoredNode(
-                Parser.parse(booleanExpressionTutorial),
-                ColorPicker.getNextColor()
+            PlottingConfig.getConfig(
+                new XYRange(
+                    -3 * Math.PI,3 * Math.PI,
+                    -5,5
+                ),
+                new OutPutDimension(1000, 700),
+                new AST(new VariableNode("x")),
+                SCALING.TRIGONOMETRIC,
+                false,
+                new ColoredNode(
+                    booleanExpressionTutorialAST,
+                    ColorPicker.getNextColor()
+                )
             )
         )
     );
@@ -628,7 +758,7 @@ void main() throws ParseException {
             - Infix: **`gamma(x)`**
             - RPN: **`x gamma`**
         - Fakultät `x!`
-            - Infix: **`factorial(x)`**
+            - Infix: **`factorial(x)`** 
             - RPN: **`x factorial`**
         - Heaviside-Funktion `heaviside(x)`
             - Infix: **`heaviside(x)`**
