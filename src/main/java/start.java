@@ -19,9 +19,9 @@ import lvp.views.Dot;
 
 void main() throws ParseException {
 
-    // Variables for user interactions
+    // VARIABLES
 
-    // Display range
+    // Main App
 
     String xMin = "-2*pi"; // X-Achse Minimum
     String xMax = "2 * pi"; // X-Achse Maximum
@@ -31,44 +31,41 @@ void main() throws ParseException {
     XYRange xyRange;
     try {
         xyRange = new XYRange(
-            Parser.parse(xMin).evaluate(),
-            Parser.parse(xMax).evaluate(),
-            Parser.parse(yMin).evaluate(),
-            Parser.parse(yMax).evaluate()
+                Parser.parse(xMin).evaluate(),
+                Parser.parse(xMax).evaluate(),
+                Parser.parse(yMin).evaluate(),
+                Parser.parse(yMax).evaluate()
         );
     } catch(ParseException e) {
         System.out.println("Fehler beim Parsen der XYRange: " + e.getMessage());
         xyRange = XYRange.DEFAULT_RANGE();
     }
 
-    // Expressions
-
-    String complexExpression = "!(x > 1 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+b+1, 2) * sqrt(abs(a+c)) : tan(x+d) + ln(a+d)) && (b <= 5 || c != 3) ? (¯x + e*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
     String complexExpression_2 = "!(x > 1) || (sin(x^2) >= cos((x+b)/2) ? log(x+c+1, 2) * sqrt(abs(x+d)) : tan(x+a) + ln(x+b)) && (x <= 5 || x != 3) ? (x + 2)^3 / (4 - x) : (x >= 2 ? sin(x)*cos(x) : log(x) + sqrt(x^2 + 1))";
     String complexExpression_3 = "!(x > 1 && a < 10) || (sin(x^2) >= cos(a/2) ? log(x+b+1, 2) * sqrt(abs(a+c)) : tan(x+d) + ln(a+d)) && (b <= 5 || c != 3) ? (¯x + e*2)^3 / (4 - b) : (x >= a ? sin(x)*cos(a) : log(x) + sqrt(a^2 + 1))";
     String complexExpression_4 = "!(x > 1) || (sin(x^2) >= cos((x+b)/2) ? log(x+c+1, 2) * sqrt(abs(x+d)) : tan(x+a) + ln(x+b)) && (x <= 5 || x != 3) ? (x + 2)^3 / (4 - x) : (x >= 2 ? sin(x)*cos(x) : log(x) + sqrt(x^2 + 1))";
     String complexExpression_5 = "max(sinh(a+b) + cosh(c-d) - tanh(e*x), min(asinh(a^2) * acosh(b+1), atanh(c-d) + log(abs(e)+2, 3))) + sqrt(abs(a*b-c*d+e*x)) - ln(max(a, b, c, d, e, x))";
     String complexExpression_6 = "sqrt(abs((a+b-c*d)/(e+x))) + log(min(a^2+b^2, c^2+d^2), 5) * sinh(x) - cosh(a-b) + tanh(c+d) + asinh(e-x) - acosh(a+b+c) + atanh(d-e) + ln(abs(x+a+b))";
     String complexExpression_7 = "min(max(a, b) + sinh(c) - cosh(d) + tanh(e), sqrt(abs(a*b-c*d+e*x)) + log(a+b+c+d+e+x, 7)) * (asinh(a) + acosh(b) - atanh(c) + ln(d+e+x))";
-    String func_1 = complexExpression; //Funktion 1
+
+    String func_1 = ""; //Funktion 1
     String func_2 = ""; // Funktion 2
-    String func_3 = ""; // Funktion 3
+    String func_3 = "f ? g : h"; // Funktion 3
     String func_4 = ""; // Funktion 4
     String func_5 = ""; // Funktion 5
 
     String scalingFunction = "x"; // Skalier Funktion
 
     ArrayList<String> expressions = new ArrayList<>(
-            List.of(
-                    func_1,
-                    func_2,
-                    func_3,
-                    func_4,
-                    func_5
-            )
+        List.of(
+            func_1,
+            func_2,
+            func_3,
+            func_4,
+            func_5
+        )
     );
 
-    // Variables
     String exampleExpr_1 = "((sin(x) + x^2 > 0 ? sqrt(abs(x)) : log(x+2)) + (cosh(x) - E * sinh(x)) * (x > 5 ? max(sin(x), cos(x)) : min(tan(x), 2*x))) / (asinh(abs(x-3)) + 1)";
     String exampleExpr_2 = "((x < 0 || cos(x) >= 0.5 ? tan(x) : abs(x-3)) + (asin(x/10) * acosh(abs(x)+1)) - (x > 2 && x < 8 ? log(x+5, 2) : ln(abs(x)+3)))";
     String exampleExpr_3 = "x == 0 ? 1 : x > 0 ? (x^3 + sin(x) * cos(x) - PI * tanh(x) + sqrt(abs(x))) : (-x + asinh(x) - acosh(abs(x)+2) + atanh(x/10))";
@@ -87,92 +84,85 @@ void main() throws ParseException {
     AST var_4AST;
     AST var_5AST;
 
+
     try {
         var_1AST = Parser.parse(var_1);
-        var_2AST = Parser.parse(var_2);
-        var_3AST = Parser.parse(var_3);
-        var_4AST = Parser.parse(var_4);
-        var_5AST = Parser.parse(var_5);
         if (var_1AST.hasVar("a")) {
             System.out.println("Variablen dürfen sich nicht selbst enthalten: a = \"" + var_1 + "\"");
             var_1AST = new AST(new ValueNode(1));
-            var_1 = "1"; // Fallback to a default value if variable contains itself
+            var_1 = "1";
         }
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen der Variable a: " + e.getMessage());
+        var_1AST = new AST(new ValueNode(1));
+        var_1 = "1";
+    }
+    try {
+        var_2AST = Parser.parse(var_2);
         if (var_2AST.hasVar("b")) {
             System.out.println("Variablen dürfen sich nicht selbst enthalten: b = \"" + var_2 + "\"");
             var_2AST = new AST(new ValueNode(2));
             var_2 = "2"; // Fallback to a default value if variable contains itself
         }
+    } catch(ParseException e) {
+        System.out.println("Fehler beim Parsen der Variable b: " + e.getMessage());
+        var_2AST = new AST(new ValueNode(2));
+        var_2 = "2";
+    }
+    try {
+        var_3AST = Parser.parse(var_3);
         if (var_3AST.hasVar("c")) {
             System.out.println("Variablen dürfen sich nicht selbst enthalten: c = \"" + var_3 + "\"");
             var_3AST = new AST(new ValueNode(3));
             var_3 = "3"; // Fallback to a default value if variable contains itself
         }
+    } catch(ParseException e) {
+        System.out.println("Fehler beim Parsen der Variable c: " + e.getMessage());
+        var_3AST = new AST(new ValueNode(3));
+        var_3 = "2";
+    }
+    try {
+        var_4AST = Parser.parse(var_4);
         if (var_4AST.hasVar("d")) {
-            System.out.println("Variablen dürfen sich nicht selbst enthalten: d = \"" + var_4 + "\"");
+            System.out.println("Variablen dürfen sich nicht selbst enthalten: d = \"" + var_5 + "\"");
             var_4AST = new AST(new ValueNode(4));
             var_4 = "4"; // Fallback to a default value if variable contains itself
         }
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen der Variable d: " + e.getMessage());
+        var_4AST = new AST(new ValueNode(4));
+        var_4 = "4";
+    }
+    try {
+        var_5AST = Parser.parse(var_5);
         if (var_5AST.hasVar("e")) {
             System.out.println("Variablen dürfen sich nicht selbst enthalten: e = \"" + var_5 + "\"");
             var_5AST = new AST(new ValueNode(5));
             var_5 = "5"; // Fallback to a default value if variable contains itself
         }
     } catch (ParseException e) {
-        System.out.println("Fehler beim Parsen der Variable a: " + e.getMessage());
-        var_1AST = new AST(new ValueNode(1)); // Fallback to a default value if parsing fails
-        var_2AST = new AST(new ValueNode(2));
-        var_3AST = new AST(new ValueNode(3));
-        var_4AST = new AST(new ValueNode(4));
+        System.out.println("Fehler beim Parsen der Variable e: " + e.getMessage());
         var_5AST = new AST(new ValueNode(5));
+        var_5 = "5";
     }
+
     GlobalContext.VARIABLES.add(
             new Variable(
-                    "a",
-                    var_1AST
+                    "a", var_1AST
             ),
             new Variable(
-                    "b",
-                    var_2AST
+                    "b", var_2AST
             ),
             new Variable(
-                    "c",
-                    var_3AST
+                    "c", var_3AST
             ),
             new Variable(
-                    "d",
-                    var_4AST
+                    "d", var_4AST
             ),
             new Variable(
-                    "e",
-                    var_5AST
+                    "e", var_5AST
             )
     );
-
-    boolean logScale = false; // Logarithmisch
-    boolean trigScale = false; // Trigonometrisch
-
-    SCALING scale = scaleHandler(logScale, trigScale);
-
-    boolean useSmartRange = true; // Smart Range
-
-    // Titel und Einleitung
-    Clerk.markdown("""
-        # Funktionsplotter – Demo
-        **Prüfungsleistung Entwicklungsprojekt SoSe 2025**
-        """);
-
-    // Div: Application
-
-    Clerk.markdown("""
-        ## Applikation
-        """);
-
-    // Functions
-
-    Clerk.markdown("""
-        ### Funktionen
-        """);
 
     ColoredNode[] expressionsAsColoredNodes = expressions.stream().map(expr -> {
         try {
@@ -189,234 +179,95 @@ void main() throws ParseException {
         }
     }).toArray(ColoredNode[]::new);
 
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Funktion 1", "String func_1 = \"$\";", func_1 == null ? "" : func_1));
-    Clerk.markdown(Text.fillOut("""
-        ${0}""", expressionsAsColoredNodes[0].ast().hasVar("x") || expressionsAsColoredNodes[0].ast().isEmpty() ? "" : expressionsAsColoredNodes[0].ast().evaluate()));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Funktion 2", "String func_2 = \"$\";", func_2 == null ? "" : func_2));
-    Clerk.markdown(Text.fillOut("""
-        ${0}""", expressionsAsColoredNodes[1].ast().hasVar("x") || expressionsAsColoredNodes[1].ast().isEmpty() ? "" : expressionsAsColoredNodes[1].ast().evaluate()));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Funktion 3", "String func_3 = \"$\";", func_3 == null ? "" : func_3));
-    Clerk.markdown(Text.fillOut("""
-        ${0}""", expressionsAsColoredNodes[2].ast().hasVar("x") || expressionsAsColoredNodes[2].ast().isEmpty() ? "" : expressionsAsColoredNodes[2].ast().evaluate()));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Funktion 4", "String func_4 = \"$\";", func_4 == null ? "" : func_4));
-    Clerk.markdown(Text.fillOut("""
-        ${0}""", expressionsAsColoredNodes[3].ast().hasVar("x") || expressionsAsColoredNodes[3].ast().isEmpty() ? "" : expressionsAsColoredNodes[3].ast().evaluate()));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Funktion 5", "String func_5 = \"$\";", func_5 == null ? "" : func_5));
-    Clerk.markdown(Text.fillOut("""
-        ${0}""", expressionsAsColoredNodes[4].ast().hasVar("x") || expressionsAsColoredNodes[4].ast().isEmpty() ? "" : expressionsAsColoredNodes[4].ast().evaluate()));
+    boolean logScale = false; // Logarithmisch
+    boolean trigScale = false; // Trigonometrisch
+    boolean useSmartRange = true; // Smart Range
 
-    // Variables
+    SCALING scale = scaleHandler(logScale, trigScale);
 
-    Clerk.markdown("""
-        ### Variablen
-        """);
-
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Variable a", "String var_1 = \"$\";", var_1 == null ? "" : var_1));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Variable b", "String var_2 = \"$\";", var_2 == null ? "" : var_2));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Variable c", "String var_3 = \"$\";", var_3 == null ? "" : var_3));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Variable d", "String var_4 = \"$\";", var_4 == null ? "" : var_4));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Variable e", "String var_5 = \"$\";", var_5 == null ? "" : var_5));
-
-    // Plot
-
-    Clerk.markdown("""
-        ### Anzeige
-        """);
-
-    AST scalingAST = new AST(new VariableNode("x"));
+    AST scalingAST;
 
     try {
-        Parser.parse(scalingFunction.equals("") ? "x" : scalingFunction);
+        scalingAST = Parser.parse(scalingFunction.equals("") ? "x" : scalingFunction);
     } catch (ParseException e) {
         System.out.println("Fehler beim Parsen der Skalierfunktion: " + e.getMessage());
+        scalingAST = new AST(new VariableNode("x"));
     }
 
-    Clerk.markdown(
-        Plotter.plot(
-            PlottingConfig.getConfig(
-                xyRange,
-                new OutPutDimension(1000, 700),
-                scalingAST,
-                scale,
-                useSmartRange,
-                expressionsAsColoredNodes
-            )
-        )
+    PlottingConfig plottingConfig = PlottingConfig.getConfig(
+            xyRange,
+            new OutPutDimension(1000, 700),
+            scalingAST,
+            scale,
+            useSmartRange,
+            expressionsAsColoredNodes
     );
 
-    // Settings
+    xMin = "" + plottingConfig.xyRange().xMin();
+    xMax = "" + plottingConfig.xyRange().xMax();
+    yMin = "" + plottingConfig.xyRange().yMin();
+    yMax = "" + plottingConfig.xyRange().yMax();
 
-    Clerk.markdown("""
-        ### Einstellungen
-        """);
+    // Tutorial arithmetic section vars
 
-
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// X-Achse Minimum", "String xMin = \"$\";", xMin));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// X-Achse Maximum", "String xMax = \"$\";", xMax));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Y-Achse Minimum", "String yMin = \"$\";", yMin));
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Y-Achse Maximum", "String yMax = \"$\";", yMax));
-
-    Clerk.markdown("""
-        ##
-        """);
-
-    Clerk.write(Interaction.input("./src/main/java/start.java", "// Skalier Funktion", "String scalingFunction = \"$\";", "x"));
-
-    Clerk.markdown("""
-        ##
-        """);
-
-    Clerk.write(Interaction.checkbox("./src/main/java/start.java", "// Logarithmisch", "boolean logScale = $;", logScale));
-    Clerk.write(Interaction.checkbox("./src/main/java/start.java", "// Trigonometrisch", "boolean trigScale = $;", trigScale));
-    Clerk.write(Interaction.checkbox("./src/main/java/start.java", "// Smart Range", "boolean useSmartRange = $;", useSmartRange));
-
-    // Dot Graph
-
-    Clerk.markdown("""
-        ### Dot Graph Darstellungen, Infix- und RPN-Darstellung
-        """);
-
-    Clerk.markdown(Text.fillOut("""
-        ### 1. Funktion:
-        - Infix: `${0}`
-        - RPN:   `${1}`
-        """, expressionsAsColoredNodes[0].ast().toStringInfix(), expressionsAsColoredNodes[0].ast().toStringRPN()
-    ));
-    Dot dotGraphFunc_1 = new Dot();
-    dotGraphFunc_1.draw(expressionsAsColoredNodes[0].ast().toDotGraph());
-
-    Clerk.markdown(Text.fillOut("""
-        ### 2. Funktion:
-        - Infix: `${0}`
-        - RPN:   `${1}`
-        """, expressionsAsColoredNodes[1].ast().toStringInfix(), expressionsAsColoredNodes[1].ast().toStringRPN()
-    ));
-    Dot dotGraphFunc_2 = new Dot();
-    dotGraphFunc_2.draw(expressionsAsColoredNodes[1].ast().toDotGraph());
-
-    Clerk.markdown(Text.fillOut("""
-        ### 3. Funktion:
-        - Infix: `${0}`
-        - RPN:   `${1}`
-        """, expressionsAsColoredNodes[2].ast().toStringInfix(), expressionsAsColoredNodes[2].ast().toStringRPN()
-    ));
-    Dot dotGraphFunc_3 = new Dot();
-    dotGraphFunc_3.draw(expressionsAsColoredNodes[2].ast().toDotGraph());
-
-    Clerk.markdown(Text.fillOut("""
-        ### 4. Funktion:
-        - Infix: `${0}`
-        - RPN:   `${1}`
-        """, expressionsAsColoredNodes[3].ast().toStringInfix(), expressionsAsColoredNodes[3].ast().toStringRPN()
-    ));
-    Dot dotGraphFunc_4 = new Dot();
-    dotGraphFunc_4.draw(expressionsAsColoredNodes[3].ast().toDotGraph());
-
-    Clerk.markdown(Text.fillOut("""
-        ### 5. Funktion:
-        - Infix: `${0}`
-        - RPN:   `${1}`
-        """, expressionsAsColoredNodes[4].ast().toStringInfix(), expressionsAsColoredNodes[4].ast().toStringRPN()
-    ));
-    Dot dotGraphFunc_5 = new Dot();
-    dotGraphFunc_5.draw(expressionsAsColoredNodes[4].ast().toDotGraph());
-
-    // Div: Input
-    Clerk.markdown("""
-        # Anleitung
-        ## 1. Eingabe
-        """);
-    Clerk.markdown("""
-        ### 1.2 Eingabe eines arithmetischen Ausdrucks
-        Geben Sie einen Ausdruck in Infix- oder UPN-Notation ein (z. B. `sin(x) + 2` oder `x sin 2 +`).
-        """);
-
-    // Expression Input
-    String inputExpr = "sin(x)";
-    Clerk.write(
-            Interaction.input(
-                    "./src/main/java/start.java", "// Ausdruck",
-                    "String inputExpr = \"$\";",
-                    inputExpr == null ? "Geben Sie einen Ausdruck ein" : inputExpr
-            )
-    );
-
-
-    Clerk.markdown("""
-        ### 1.2 Eingabe einer Variable
-        Geben Sie eine Variable, in Form eines simplen Wertes (z. B. `10, -4.2`), eines arithmetischen Ausdrucks (z. B. `sqrt(x), log(69)`) oder in Form von vordefinierten Konstanten (z. B. `e, pi`) ein.
-        **ACHTUNG:** Variablen können auch andere Variablen referenzieren, dies kann zu zirkulären Abhängigkeiten führen, was zu einem StackOverFlow führen wird.
-        """);
-
-    // Variable Input
-    String inputVar = "x cos";
-    AST inputVarAST;
-    try {
-        inputVarAST = Parser.parse(inputVar);
-    } catch (ParseException e) {
-        System.out.println("Fehler beim Parsen der Variable v: " + e.getMessage());
-        inputVarAST = new AST(new ValueNode(1));
-    }
-
-    GlobalContext.VARIABLES.add(
-            new Variable(
-                    "v", inputVarAST
-            )
-    );
-
-    Clerk.write(
-            Interaction.input(
-                    "./src/main/java/start.java", "// Variable v",
-                    "String inputVar = \"$\";",
-                    inputVar.equals("") ? "Geben Sie eine Variable ein" : inputVar
-            )
-    );
-
-    Clerk.markdown("""
-        Diese Variable lässt sich nun in den Ausdrücken verwenden unter ihrem angegebenen Identifier (hier `v`).
-        """);
-
-    String inputExprWithVar = "e^x"; // Ausdruck mit Variable
-    AST inputExprWithVarAST;
-    try {
-        inputExprWithVarAST = Parser.parse(inputVar);
-    } catch (ParseException e) {
-        System.out.println("Fehler beim Parsen des Ausdrucks \"Ausdruck mit Variable\": " + e.getMessage());
-        inputExprWithVarAST = new AST(new VariableNode("x"));
-    }
-
-    Clerk.write(
-            Interaction.input(
-                    "./src/main/java/start.java", "// Ausdruck mit Variable",
-                    "String inputExprWithVar = \"$\";",
-                    inputExprWithVar.equals("") ? "Geben Sie einen Ausdruck ein" : inputExprWithVar
-            )
-    );
-    // Div: Display AST as Dot-Graph
-    Clerk.markdown("""
-        ## 2. Abstrakter Syntaxbaum (AST)
-        Der eingegebene Ausdruck wird als AST (DOT-Graph) dargestellt.
-        """);
-
-    // AST Example
-    Dot astDot = new Dot();
-    astDot.draw(
-        inputExprWithVarAST.toDotGraph()
-    );
-
-    // Div: Infix & UPN
-    Clerk.markdown("""
-        ## 3. Anzeigeeinstellungen
-        ### 3.1 Werte- & Definitions-Bereich
-        Mit den Folgenden Eingabefeldern lassen sich Werte und Definitions bereich der zu plottenden Ausdrücke manuell einstellen
-        """);
+    XYRange xyRangeTutorial;
 
     String xMinTutorial = "-5"; // X-Achse Min
     String xMaxTutorial = "5"; // X-Achse Max
     String yMinTutorial = "-10"; // Y-Achse Min
     String yMaxTutorial = "10"; // Y-Achse Max
 
-    XYRange xyRangeTutorial;
+    String inputExpr = "sin(x)"; // Ausdruck
+    String inputVar = "x cos"; // Variable v
+    String inputExprWithVar = "v cos"; // Ausdruck mit Variable
+
+    String scalingFunctionTutorial = "x"; // Skalier Funktion Beispiel
+
+    AST inputVarAST;
+    AST inputExprWithVarAST;
+    AST scalingFunctionTutorialAST;
+
+    boolean logScaleTutorial = false; // Logarithmische Skalierung
+    boolean trigScaleTutorial = false; // Trigonometrische Skalierung
+    boolean useSmartRangeTutorial = false; // Use Smart Range
+
+    SCALING scaleTutorial = scaleHandler(logScaleTutorial, trigScaleTutorial);
+
+    try {
+        inputVarAST = Parser.parse(inputVar);
+        if (inputVarAST.hasVar("v")) {
+            System.out.println("Variablen dürfen sich nicht selbst enthalten: v = \"" + var_1 + "\"");
+            inputVarAST = new AST(new ValueNode(6));
+            inputVar = "6";
+        }
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen der Variable v: " + e.getMessage());
+        inputVarAST = new AST(new ValueNode(6));
+        inputVar = "6";
+    }
+    GlobalContext.VARIABLES.add(
+            new Variable(
+                    "v", inputVarAST
+            )
+    );
+
+    try {
+        inputExprWithVarAST = Parser.parse(inputExprWithVar);
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen des Ausdrucks \"Ausdruck mit Variable\": " + e.getMessage());
+        inputExprWithVarAST = new AST(new VariableNode("x"));
+    }
+    inputExprWithVar = inputExprWithVarAST.toStringInfix(false);
+
+    try {
+        scalingFunctionTutorialAST = Parser.parse(scalingFunctionTutorial);
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen der Skalierfunktion im Abschnitt 3.2 Skalierung: " + e.getMessage());
+        scalingFunctionTutorialAST = new AST(new VariableNode("x"));
+    }
+    scalingFunctionTutorial = scalingFunctionTutorialAST.toStringInfix(false);
+
+
     try {
         xyRangeTutorial = new XYRange(
                 Parser.parse(xMinTutorial).evaluate(),
@@ -429,23 +280,363 @@ void main() throws ParseException {
         xyRangeTutorial = XYRange.DEFAULT_RANGE();
     }
 
+    xMinTutorial = "" + xyRangeTutorial.xMin();
+    xMaxTutorial = "" + xyRangeTutorial.xMax();
+    yMinTutorial = "" + xyRangeTutorial.yMin();
+    yMaxTutorial = "" + xyRangeTutorial.yMax();
+
+
+    // Tutorial boolean expressions section vars
+    String booleanExpressionTutorial = "f ? g : h"; // Logischer Ausdruck
+    String booleanVarTutorial_1 = "x < 0"; // Logische Variable f
+    String booleanVarTutorial_2 = "tan(x)"; // Logische Variable g
+    String booleanVarTutorial_3 = "x sin"; // Logische Variable h
+
+    AST booleanExpressionTutorialAST;
+    AST booleanVarTutorial_1AST;
+    AST booleanVarTutorial_2AST;
+    AST booleanVarTutorial_3AST;
+
+    try {
+        booleanVarTutorial_1AST = Parser.parse(booleanVarTutorial_1);
+        if (booleanVarTutorial_1AST.hasVar("f")) {
+            System.out.println("Variablen dürfen sich nicht selbst enthalten: f = \"" + booleanVarTutorial_1 + "\"");
+            booleanVarTutorial_1AST = new AST(new ValueNode(7));
+            booleanVarTutorial_1 = "7";
+        }
+    } catch(ParseException e) {
+        System.out.println("Fehler beim Parsen der Variable f: " + e.getMessage());
+        booleanVarTutorial_1AST = new AST(new ValueNode(7));
+        booleanVarTutorial_1 = "7";
+    }
+    try {
+        booleanVarTutorial_2AST = Parser.parse(booleanVarTutorial_2);
+        if (booleanVarTutorial_2AST.hasVar("g")) {
+            System.out.println("Variablen dürfen sich nicht selbst enthalten: g = \"" + booleanVarTutorial_2 + "\"");
+            booleanVarTutorial_2AST = new AST(new ValueNode(8));
+            booleanVarTutorial_2 = "8";
+        }
+    } catch(ParseException e) {
+        System.out.println("Fehler beim Parsen der Variable g: " + e.getMessage());
+        booleanVarTutorial_2AST = new AST(new ValueNode(8));
+        booleanVarTutorial_2 = "8";
+    }
+    try {
+        booleanVarTutorial_3AST = Parser.parse(booleanVarTutorial_3);
+        if (booleanVarTutorial_3AST.hasVar("h")) {
+            System.out.println("Variablen dürfen sich nicht selbst enthalten: h = \"" + booleanVarTutorial_3 + "\"");
+            booleanVarTutorial_3AST = new AST(new ValueNode(9));
+            booleanVarTutorial_3 = "9";
+        }
+    } catch(ParseException e) {
+        System.out.println("Fehler beim Parsen der Variable h: " + e.getMessage());
+        booleanVarTutorial_3AST = new AST(new ValueNode(9));
+        booleanVarTutorial_3 = "9";
+    }
+
+    GlobalContext.VARIABLES.add(
+            new Variable(
+                    "f",
+                    booleanVarTutorial_1AST
+            ),
+            new Variable(
+                    "g",
+                    booleanVarTutorial_2AST
+            ),
+            new Variable(
+                    "h",
+                    booleanVarTutorial_3AST
+            )
+    );
+    try {
+        booleanExpressionTutorialAST = Parser.parse(booleanExpressionTutorial);
+    } catch (ParseException e) {
+        System.out.println("Fehler beim Parsen des logischen Ausdrucks: " + e.getMessage());
+        booleanExpressionTutorialAST = new AST(new VariableNode("x")); // Fallback to a default value if parsing fails
+    }
+    booleanExpressionTutorial = booleanExpressionTutorialAST.toStringInfix(false); // This has to be done after the variables haven been added, because the tostringmethod would return a "0" for nonexisting variables
+
+    // INTERACTIONS AND MARKDOWN
+
+    // Main App
+
+    // Title
+    Clerk.markdown("""
+        # Funktionsplotter – Demo
+        **Prüfungsleistung Entwicklungsprojekt SoSe 2025**
+        """);
+    Clerk.markdown("""
+        ## Applikation
+        """);
+
+    // Main App Functions
+    Clerk.markdown("""
+        ### Funktionen
+        """);
+
+    // Main App Functions: Darw Inputs and evaluate if possible
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Funktion 1",
+            "String func_1 = \"$\";", func_1 == null ? "" : func_1
+    ));
+    Clerk.markdown(Text.fillOut("""
+        ${0}""",
+            expressionsAsColoredNodes[0].ast().hasVar("x") ||
+                    expressionsAsColoredNodes[0].ast().isEmpty()
+                    ? ""
+                    : expressionsAsColoredNodes[0].ast().evaluate()
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Funktion 2",
+            "String func_2 = \"$\";", func_2 == null ? "" : func_2
+    ));
+    Clerk.markdown(Text.fillOut("""
+        ${0}""",
+            expressionsAsColoredNodes[1].ast().hasVar("x") ||
+                    expressionsAsColoredNodes[1].ast().isEmpty()
+                    ? ""
+                    : expressionsAsColoredNodes[1].ast().evaluate()
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Funktion 3",
+            "String func_3 = \"$\";", func_3 == null ? "" : func_3
+    ));
+    Clerk.markdown(Text.fillOut("""
+        ${0}""",
+            expressionsAsColoredNodes[2].ast().hasVar("x") ||
+                    expressionsAsColoredNodes[2].ast().isEmpty()
+                    ? ""
+                    : expressionsAsColoredNodes[2].ast().evaluate()
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Funktion 4",
+            "String func_4 = \"$\";", func_4 == null ? "" : func_4
+    ));
+    Clerk.markdown(Text.fillOut("""
+        ${0}""",
+            expressionsAsColoredNodes[3].ast().hasVar("x") ||
+                    expressionsAsColoredNodes[3].ast().isEmpty()
+                    ? ""
+                    : expressionsAsColoredNodes[3].ast().evaluate()
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Funktion 5",
+            "String func_5 = \"$\";", func_5 == null ? "" : func_5
+    ));
+    Clerk.markdown(Text.fillOut("""
+        ${0}""",
+            expressionsAsColoredNodes[4].ast().hasVar("x") ||
+                    expressionsAsColoredNodes[4].ast().isEmpty()
+                    ? ""
+                    : expressionsAsColoredNodes[4].ast().evaluate()
+    ));
+
+    // Main App Variables
+    Clerk.markdown("""
+        ### Variablen
+        """);
+
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Variable a",
+            "String var_1 = \"$\";", var_1 == null ? "" : var_1
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Variable b",
+            "String var_2 = \"$\";", var_2 == null ? "" : var_2
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Variable c",
+            "String var_3 = \"$\";", var_3 == null ? "" : var_3
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Variable d",
+            "String var_4 = \"$\";", var_4 == null ? "" : var_4
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Variable e",
+            "String var_5 = \"$\";", var_5 == null ? "" : var_5
+    ));
+
+    //Main App Display
+    Clerk.markdown("""
+        ### Anzeige
+        """);
+    Clerk.markdown(Plotter.plot(plottingConfig));
+
+    // Main App Settings
+    Clerk.markdown("""
+        ### Einstellungen
+        """);
+    Clerk.markdown("""
+        ##
+        """);
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// X-Achse Minimum",
+            "String xMin = \"$\";", xMin
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// X-Achse Maximum",
+            "String xMax = \"$\";", xMax
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Y-Achse Minimum",
+            "String yMin = \"$\";", yMin
+    ));
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Y-Achse Maximum",
+            "String yMax = \"$\";", yMax
+    ));
+
+    // Main App ScalingFunction
+    Clerk.markdown("""
+        ##
+        """);
+    Clerk.write(Interaction.input(
+            "./src/main/java/start.java", "// Skalier Funktion",
+            "String scalingFunction = \"$\";", "x"
+    ));
+
+    // Main App predefined scale? and smart Range?
+    Clerk.markdown("""
+        ##
+        """);
+    Clerk.write(Interaction.checkbox(
+            "./src/main/java/start.java", "// Logarithmisch",
+            "boolean logScale = $;", logScale
+    ));
+    Clerk.write(Interaction.checkbox(
+            "./src/main/java/start.java", "// Trigonometrisch",
+            "boolean trigScale = $;", trigScale
+    ));
+    Clerk.markdown("""
+        ##
+        """);
+    Clerk.write(Interaction.checkbox(
+            "./src/main/java/start.java", "// Smart Range",
+            "boolean useSmartRange = $;", useSmartRange
+    ));
+
+    // Main App Dot Graphs, Infix and RPN
+    Clerk.markdown("""
+        ### Dot Graph Darstellungen, Infix- und RPN-Darstellung
+        """);
+
+    Clerk.markdown(Text.fillOut("""
+        ### 1. Funktion:
+        - Infix: `${0}`
+        - RPN:   `${1}`
+        """, expressionsAsColoredNodes[0].ast().toStringInfix(true), expressionsAsColoredNodes[0].ast().toStringRPN(true)
+    ));
+    new Dot().draw(expressionsAsColoredNodes[0].ast().toDotGraph());
+
+    Clerk.markdown(Text.fillOut("""
+        ### 2. Funktion:
+        - Infix: `${0}`
+        - RPN:   `${1}`
+        """, expressionsAsColoredNodes[1].ast().toStringInfix(true), expressionsAsColoredNodes[1].ast().toStringRPN(true)
+    ));
+    new Dot().draw(expressionsAsColoredNodes[1].ast().toDotGraph());
+
+    Clerk.markdown(Text.fillOut("""
+        ### 3. Funktion:
+        - Infix: `${0}`
+        - RPN:   `${1}`
+        """, expressionsAsColoredNodes[2].ast().toStringInfix(true), expressionsAsColoredNodes[2].ast().toStringRPN(true)
+    ));
+    new Dot().draw(expressionsAsColoredNodes[2].ast().toDotGraph());
+
+    Clerk.markdown(Text.fillOut("""
+        ### 4. Funktion:
+        - Infix: `${0}`
+        - RPN:   `${1}`
+        """, expressionsAsColoredNodes[3].ast().toStringInfix(true), expressionsAsColoredNodes[3].ast().toStringRPN(true)
+    ));
+    new Dot().draw(expressionsAsColoredNodes[3].ast().toDotGraph());
+
+    Clerk.markdown(Text.fillOut("""
+        ### 5. Funktion:
+        - Infix: `${0}`
+        - RPN:   `${1}`
+        """, expressionsAsColoredNodes[4].ast().toStringInfix(true), expressionsAsColoredNodes[4].ast().toStringRPN(true)
+    ));
+    new Dot().draw(expressionsAsColoredNodes[4].ast().toDotGraph());
+
+    // Tutorial
+
+    // Tutorial Input Expression
+    Clerk.markdown("""
+        # Anleitung
+        ## 1. Eingabe
+        """);
+    Clerk.markdown("""
+        ### 1.2 Eingabe eines arithmetischen Ausdrucks
+        Geben Sie einen Ausdruck in Infix- oder UPN-Notation ein (z. B. `sin(x) + 2` oder `x sin 2 +`).
+        """);
+    Clerk.write(
+            Interaction.input(
+                    "./src/main/java/start.java", "// Ausdruck",
+                    "String inputExpr = \"$\";",
+                    inputExpr == null ? "Geben Sie einen Ausdruck ein" : inputExpr
+            )
+    );
+
+    // Tutorial Input Variable
+    Clerk.markdown("""
+        ### 1.2 Eingabe einer Variable
+        Geben Sie eine Variable, in Form eines simplen Wertes (z. B. `10, -4.2`), eines arithmetischen Ausdrucks (z. B. `sqrt(x), log(69)`) oder in Form von vordefinierten Konstanten (z. B. `E, PI`) ein.<br>
+        **ACHTUNG:** Variablen können auch andere Variablen referenzieren, dies kann zu zirkulären Abhängigkeiten führen, was zu einem StackOverFlow führen wird.
+        """);
+    Clerk.write(
+            Interaction.input(
+                    "./src/main/java/start.java", "// Variable v",
+                    "String inputVar = \"$\";",
+                    inputVar.equals("") ? "Geben Sie eine Variable ein" : inputVar
+            )
+    );
+
+    // Tutorial Input Expression with Variable
+    Clerk.markdown("""
+        Diese Variable lässt sich nun in den Ausdrücken verwenden unter ihrem angegebenen Identifier (hier `v`).
+        """);
+
+    Clerk.write(
+            Interaction.input(
+                    "./src/main/java/start.java", "// Ausdruck mit Variable",
+                    "String inputExprWithVar = \"$\";",
+                    inputExprWithVar.equals("") ? "Geben Sie einen Ausdruck ein" : inputExprWithVar
+            )
+    );
+
+    // Tutorial Display AST as Dot-Graph
+    Clerk.markdown("""
+        ## 2. Abstrakter Syntaxbaum (AST)
+        Der eingegebene Ausdruck wird als AST (DOT-Graph) dargestellt.
+        """);
+    new Dot().draw(inputExprWithVarAST.toDotGraph());
+    // Tutorial Range
+    Clerk.markdown("""
+        ## 3. Anzeigeeinstellungen
+        ### 3.1 Werte- & Definitions-Bereich
+        Mit den Folgenden Eingabefeldern lassen sich Werte und Definitions bereich der zu plottenden Ausdrücke manuell einstellen
+        """);
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// X-Achse Min",
             "String xMinTutorial = \"$\";",
-            "" + xMinTutorial));
+            xMinTutorial));
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// X-Achse Max",
             "String xMaxTutorial = \"$\";",
-            "" + xMaxTutorial));
+            xMaxTutorial));
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// Y-Achse Min",
             "String yMinTutorial = \"$\";",
-            "" + yMinTutorial));
+            yMinTutorial));
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// Y-Achse Max",
             "String yMaxTutorial = \"$\";",
-            "" + yMaxTutorial));
+            yMaxTutorial));
 
+    // Tutorial ScalingFunction
     Clerk.markdown("""
         ### 3.2 Skalierung
         Es ist außerdem möglich eine Funktion in Form eines arithmetischen Ausdrucks anzugeben, welche die Skalierung der X-Achse definiert, der eingegebene Ausdruck agiert wie ein mapping (`x -> f(x)`).
@@ -466,77 +657,66 @@ void main() throws ParseException {
         welche größer als `1` oder kleiner als `-1` sind.
         Aus diesem Grund werden vorgefertigte Skalierungen wie `logarithmisch` und Skalierungen für `Kreisfunktionen` bereitgestellt.
         """);
-    String scalingFunctionTutorial = "x"; // Skalier Funktion Beispiel
-    AST scalingFunctionTutorialAST;
-    try {
-        scalingFunctionTutorialAST = Parser.parse(scalingFunctionTutorial);
-    } catch (ParseException e) {
-        System.out.println("Fehler beim Parsen der Skalierfunktion im Abschnitt 3.2 Skalierung: " + e.getMessage());
-        scalingFunctionTutorialAST = new AST(new VariableNode("x"));
-    }
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// Skalier Funktion Beispiel",
             "String scalingFunctionTutorial = \"$\";",
-            scalingFunctionTutorial.equals("") ? "x" : scalingFunctionTutorial));
-
-    boolean logScaleTutorial = false; // Logarithmische Skalierung
-    boolean trigScaleTutorial = false; // Trigonometrische Skalierung
-
-    SCALING scaleTutorial = scaleHandler(logScaleTutorial, trigScaleTutorial);
-    Clerk.write(Interaction.checkbox(
-        "./src/main/java/start.java", "// Logarithmische Skalierung",
-        "boolean logScaleTutorial = $;",
-        logScaleTutorial
-    ));
-    Clerk.write(Interaction.checkbox(
-        "./src/main/java/start.java", "// Trigonometrische Skalierung",
-        "boolean trigScaleTutorial = $;",
-        trigScaleTutorial
+            scalingFunctionTutorial.equals("") ? "x" : scalingFunctionTutorial
     ));
 
+
+    // Tutorial predefined scale? and smart Range?
     Clerk.markdown("""
         ### 3.3 Automatischer Werte- und Definitions-Bereich
         Mit der Angabe von `Smart Range` lässt sich einstellen, ob der manuel eingegebene Bereich verwendet wird, oder ob das Programm selbst einen Bereich ermitteln soll.
         """);
-
-    boolean useSmartRangeTutorial = true; // Use Smart Range
-
     Clerk.write(Interaction.checkbox(
-        "./src/main/java/start.java", "// Use Smart Range",
-        "boolean useSmartRangeTutorial = $;",
-        useSmartRangeTutorial
+            "./src/main/java/start.java", "// Logarithmische Skalierung",
+            "boolean logScaleTutorial = $;",
+            logScaleTutorial
     ));
-    // Div: Display
+    Clerk.write(Interaction.checkbox(
+            "./src/main/java/start.java", "// Trigonometrische Skalierung",
+            "boolean trigScaleTutorial = $;",
+            trigScaleTutorial
+    ));
+    Clerk.markdown("""
+        ##
+        """);
+    Clerk.write(Interaction.checkbox(
+            "./src/main/java/start.java", "// Use Smart Range",
+            "boolean useSmartRangeTutorial = $;",
+            useSmartRangeTutorial
+    ));
+
+    // Tutorial Display arithmetic expression
     Clerk.markdown(Text.fillOut("""
         ## 4. Funktionsplot im Koordinatensystem
         Die Funktion wird im Bereich x = `${0}` bis x = `${1}` geplottet.
         """, useSmartRangeTutorial
-                ? XYRangeRecommender.recommendRange(inputExprWithVarAST).xMin()
-                : xMinTutorial,
+                    ? XYRangeRecommender.recommendRange(inputExprWithVarAST).xMin()
+                    : xMinTutorial,
             useSmartRangeTutorial
-                ? XYRangeRecommender.recommendRange(inputExprWithVarAST).xMax()
-                : xMaxTutorial
+                    ? XYRangeRecommender.recommendRange(inputExprWithVarAST).xMax()
+                    : xMaxTutorial
     ));
-
-    // Plotter Output
+    System.out.println(inputExprWithVarAST.toStringInfix(false));
     Clerk.markdown(
-        Plotter.plot(
-            PlottingConfig.getConfig(
-                xyRangeTutorial,
-                new OutPutDimension(1000, 700),
-                scalingFunctionTutorialAST,
-                scaleTutorial,
-                useSmartRangeTutorial,
-                new ColoredNode(
-                    inputExprWithVarAST,
-                    ColorPicker.getNextColor()
-                )
+            Plotter.plot(
+                    PlottingConfig.getConfig(
+                            xyRangeTutorial,
+                            new OutPutDimension(1000, 700),
+                            scalingFunctionTutorialAST,
+                            scaleTutorial,
+                            useSmartRangeTutorial,
+                            new ColoredNode(
+                                    inputExprWithVarAST,
+                                    ColorPicker.getNextColor()
+                            )
+                    )
             )
-        )
     );
 
-    // Logical Expressions
-
+    // Tutorial Boolean Expression
     Clerk.markdown("""
         ## 5. Logische Ausdrücke
         Um logische Ausdrücke mit den vorhandenen arithmetischen Ausdrücken kompatibel zu machen und sinnvoll darstellen zu können, muss zuerst definiert werden wann ein arithmetischer Ausdruck `true` oder `false` ist.
@@ -548,52 +728,16 @@ void main() throws ParseException {
         ### 5.2 Beispiel
         Zur übersichtlicheren Gestaltung und Demonstrationszwecken benutzen wir Variablen
         """);
-
-    String booleanExpressionTutorial = "f ? g : h"; // Logischer Ausdruck
-    AST booleanExpressionTutorialAST;
-    try {
-        booleanExpressionTutorialAST = Parser.parse(booleanExpressionTutorial);
-    } catch (ParseException e) {
-        System.out.println("Fehler beim Parsen des logischen Ausdrucks: " + e.getMessage());
-        booleanExpressionTutorialAST = new AST(new VariableNode("x")); // Fallback to a default value if parsing fails
-    }
-
-
     Clerk.write(Interaction.input(
-        "./src/main/java/start.java", "// Logischer Ausdruck",
-        "String booleanExpressionTutorial = \"$\";",
-        booleanExpressionTutorial
+            "./src/main/java/start.java", "// Logischer Ausdruck",
+            "String booleanExpressionTutorial = \"$\";",
+            booleanExpressionTutorial
     ));
 
-
-    String booleanVarTutorial_1 = "x < 0"; // Logische Variable f
-    String booleanVarTutorial_2 = "tan(x)"; // Logische Variable g
-    String booleanVarTutorial_3 = "x sin"; // Logische Variable h
-
+    // Tutorial Boolean Variables
     Clerk.markdown("""
         ##
         """);
-
-    try {
-        GlobalContext.VARIABLES.add(
-                new Variable(
-                        "f",
-                        Parser.parse(booleanVarTutorial_1)
-                ),
-                new Variable(
-                        "g",
-                        Parser.parse(booleanVarTutorial_2)
-                ),
-                new Variable(
-                        "h",
-                        Parser.parse(booleanVarTutorial_3)
-                )
-        );
-    } catch (ParseException e) {
-        System.out.println("Fehler beim Parsen der Variablen im Abschnitt 5.2 Beispiel: " + e.getMessage());
-        GlobalContext.VARIABLES.addDefaultVariables();
-    }
-
     Clerk.write(Interaction.input(
             "./src/main/java/start.java", "// Logische Variable f",
             "String booleanVarTutorial_1 = \"$\";",
@@ -610,6 +754,7 @@ void main() throws ParseException {
             booleanVarTutorial_3
     ));
 
+    // Tutorial Display boolean expression
     Clerk.markdown("""
         Der Ausdruck ist in diesem Beispiel der ternäre Operator, für welchen die Kondition die Variable `f = x < 0` darstellt.<br>
         Wenn diese Kondition erfüllt ist, soll also `g = tan(x)` geplottet werden und für alle anderen Werte `h = sin(x)`
@@ -617,22 +762,22 @@ void main() throws ParseException {
         """);
 
     Clerk.markdown(
-        Plotter.plot(
-            PlottingConfig.getConfig(
-                new XYRange(
-                    -3 * Math.PI,3 * Math.PI,
-                    -5,5
-                ),
-                new OutPutDimension(1000, 700),
-                new AST(new VariableNode("x")),
-                SCALING.TRIGONOMETRIC,
-                false,
-                new ColoredNode(
-                    booleanExpressionTutorialAST,
-                    ColorPicker.getNextColor()
-                )
+            Plotter.plot(
+                    PlottingConfig.getConfig(
+                            new XYRange(
+                                    -3 * Math.PI,3 * Math.PI,
+                                    -5,5
+                            ),
+                            new OutPutDimension(1000, 700),
+                            new AST(new VariableNode("x")),
+                            SCALING.TRIGONOMETRIC,
+                            false,
+                            new ColoredNode(
+                                    booleanExpressionTutorialAST,
+                                    ColorPicker.getNextColor()
+                            )
+                    )
             )
-        )
     );
 
     Clerk.markdown("""
